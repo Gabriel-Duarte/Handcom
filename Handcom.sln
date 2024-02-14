@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Api", "Handcom.Api\Handcom.Api.csproj", "{C4B09E71-19F2-468D-B253-DCDCB1E6CC44}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Data", "Handcom.Data\Handcom.Data.csproj", "{618F8F56-2018-409C-A627-7197F66D5CBE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Domain", "Handcom.Domain\Handcom.Domain.csproj", "{14055060-98A6-487B-97A8-933A177C9738}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Ioc", "Handcom.Ioc\Handcom.Ioc.csproj", "{F8417559-1C57-467E-A3C3-B5FB8C6CA439}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Services", "Handcom.Services\Handcom.Services.csproj", "{AAECA63B-009D-4996-B85F-21FBCB0E4D18}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Web", "Handcom.Web\Handcom.Web.csproj", "{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C4B09E71-19F2-468D-B253-DCDCB1E6CC44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4B09E71-19F2-468D-B253-DCDCB1E6CC44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4B09E71-19F2-468D-B253-DCDCB1E6CC44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4B09E71-19F2-468D-B253-DCDCB1E6CC44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{618F8F56-2018-409C-A627-7197F66D5CBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{618F8F56-2018-409C-A627-7197F66D5CBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{618F8F56-2018-409C-A627-7197F66D5CBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{618F8F56-2018-409C-A627-7197F66D5CBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14055060-98A6-487B-97A8-933A177C9738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14055060-98A6-487B-97A8-933A177C9738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14055060-98A6-487B-97A8-933A177C9738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14055060-98A6-487B-97A8-933A177C9738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8417559-1C57-467E-A3C3-B5FB8C6CA439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8417559-1C57-467E-A3C3-B5FB8C6CA439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8417559-1C57-467E-A3C3-B5FB8C6CA439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8417559-1C57-467E-A3C3-B5FB8C6CA439}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAECA63B-009D-4996-B85F-21FBCB0E4D18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAECA63B-009D-4996-B85F-21FBCB0E4D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAECA63B-009D-4996-B85F-21FBCB0E4D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAECA63B-009D-4996-B85F-21FBCB0E4D18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {413212B7-EFA6-41C4-BF35-122D356ED17D}
+	EndGlobalSection
+EndGlobal
