@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Ioc", "Handcom.Ioc\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Services", "Handcom.Services\Handcom.Services.csproj", "{AAECA63B-009D-4996-B85F-21FBCB0E4D18}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Web", "Handcom.Web\Handcom.Web.csproj", "{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Handcom.Web", "Handcom.Web\Handcom.Web.csproj", "{F7732BA3-6906-428B-A536-389573837F0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{AAECA63B-009D-4996-B85F-21FBCB0E4D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAECA63B-009D-4996-B85F-21FBCB0E4D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAECA63B-009D-4996-B85F-21FBCB0E4D18}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A9A8B1F-4D7C-4883-94F6-4D3853798BDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7732BA3-6906-428B-A536-389573837F0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7732BA3-6906-428B-A536-389573837F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7732BA3-6906-428B-A536-389573837F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7732BA3-6906-428B-A536-389573837F0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

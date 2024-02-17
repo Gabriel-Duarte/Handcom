@@ -1,0 +1,111 @@
+﻿@page "/Login"
+@using Handcom.Web.Model.Request
+@using Handcom.Web.Pages.ContactUser
+@using Handcom.Web.Services.Interface
+
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+
+ <RadzenRow Gap="0" Class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10 my-custom-centering-class" Style="margin-top: 20vh; width: 100%; max-width: 800px; overflow: hidden;">
+    <RadzenColumn Size="12" SizeMD="6">
+        <RadzenCard Class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12"
+                    Style="height: 100%; background-image: url('Images/Inicio.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center;">
+
+
+          @*   <RadzenText TextStyle="TextStyle.DisplayH3" TagName="TagName.H2" Class="rz-color-white rz-mb-6">Welcome!</RadzenText>
+            <RadzenText TextStyle="TextStyle.H6" Class="rz-color-white">Join the world's largest community!</RadzenText>
+            <RadzenText TextStyle="TextStyle.Body2" Class="rz-color-white">Let's get started with your <strong>30 days</strong> trial.</RadzenText> *@
+        </RadzenCard>
+    </RadzenColumn>
+    <RadzenColumn Size="12" SizeMD="6">
+        <RadzenCard Class="rz-shadow-0 rz-border-radius-0 rz-p-12">
+            <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" Class="rz-mb-6">
+                Login
+            </RadzenText>
+            <RadzenTemplateForm Data=@("SimpleLogin")>
+                <RadzenLogin LoginText="Entrar" UserText="Email" PasswordText="Senha"                      
+                         UserRequired="Usuario obrigatória"
+                         PasswordRequired="Senha obrigatória"
+                         RegisterText="Registrar"
+                         RegisterMessageText="Não tem uma conta ainda?"
+                         AllowRegister="true" AllowResetPassword="false" Username=@userName Password=@password
+                         AllowRememberMe="false" 
+                         Login=@(args => OnLogin(args, "Login with default values"))                  
+                         Register=@(args => OnRegister()) />
+        </RadzenTemplateForm>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow> 
+
+
+
+@code {
+
+    string userName = "";
+    string password = "";
+    private LoginRequest loginModel = new LoginRequest();
+    private string Error = string.Empty;
+
+    public async Task OnLogin(LoginArgs args, string name)
+    {
+        try
+        {
+            loginModel.Email = args.Username;
+            loginModel.Password = args.Password;
+
+            var result = await AuthService.Login(loginModel);
+
+            if (result.IsSuccess && result.Data.AccessToken is not null)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else if (result.Errors is not null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Erro:",
+                            Detail = error,
+                            Duration = 4000
+                        });
+                }
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro:",
+                        Detail = "Erro ao efetuar o login",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    public async Task OnRegister()
+    {
+        var dialogResult = await DialogService.OpenAsync<Createuser>("", null,
+                                                            new DialogOptions()
+                                                                {
+                                                                    Width = ModalState.Small,
+                                                                    CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                                    Draggable = ModalState.Draggable,
+                                                                    Resizable = ModalState.Resizable,
+                                                                    Height = ModalState.Small,
+                                                                    ShowClose = ModalState.ShowClose
+                                                                });
+
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+  
+}

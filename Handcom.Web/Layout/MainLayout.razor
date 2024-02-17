@@ -1,16 +1,141 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+﻿@using Handcom.Web.Configuration
+@using Handcom.Web.Model.Extensions
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+@inject ThemeState ThemeState
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inherits LayoutComponentBase
+<RadzenDialog />
+<RadzenNotification />
+<RadzenTooltip />
+<RadzenContextMenu />
 
-        <article class="content px-4">
+@if (Theme != "default.css")
+{
+    <link href="_content/Radzen.Blazor/css/@(Theme)" rel="stylesheet" />
+
+    <style>
+        .rightalign {
+            text-align: right;
+        }
+    </style>
+}
+<RadzenHeader>
+    <ChildContent>
+                  <AuthorizeView>
+            <Authorized>
+                <div class="row justify-content-start align-items-center">
+                    <div class="col-6 d-flex align-items-center">
+                        <RadzenSidebarToggle Click="@SidebarToggle0Click">
+                        </RadzenSidebarToggle>
+                        <RadzenImage Path="Images/GDCS.jpg" Style="width: 10%;" />
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end">
+
+              
+                        <RadzenProfileMenu>
+                            <ChildContent>
+                                <RadzenProfileMenuItem Text="Minha Conta" Icon="account_circle" Path="updateuser" />
+                                <RadzenProfileMenuItem Text="Sair" Icon="power_settings_new" Path="logout" />
+                                <RadzenLabel Text="@($"{"Versão: " + (System.Reflection.Assembly.GetEntryAssembly().GetName().Version)}")" />
+                            </ChildContent>
+                            <Template>
+                                <RadzenImage Path="Images/Mash.jpg" style="border-radius: 16px; height: 32px; width: 32px">
+                                </RadzenImage>
+                            </Template>
+                        </RadzenProfileMenu>
+
+                        @*    </Authorized>
+                        <NotAuthorized>
+                        <RadzenButton Text="Login" style="margin-right: 1cm;" Click="@(() => NavigationManager.NavigateTo("login"))" />
+                        </NotAuthorized>
+                        </AuthorizeView>  *@
+                  
+                    </div>
+                </div>
+            </Authorized>
+
+            <NotAuthorized>
+
+            </NotAuthorized>
+        </AuthorizeView>
+    </ChildContent>
+</RadzenHeader>
+<RadzenBody @ref="body0">
+    <ChildContent>
+        <RadzenContentContainer Name="main">
             @Body
-        </article>
-    </main>
-</div>
+        </RadzenContentContainer>
+    </ChildContent>
+</RadzenBody>
+<AuthorizeView>
+    <Authorized>
+        <RadzenSidebar @ref="sidebar0" Style="top: 52px; bottom: 0px; width: 250px; transform: translateX(0px);">
+            <ChildContent>
+                <RadzenTextBox @bind-Value="searchText" Placeholder="Pesquisar" Style="margin: 10px; width: 90%" @oninput="@OnSearchTextChanged" />
+                <RadzenPanelMenu style="height: 100%">
+                    <ChildContent>
+                        @foreach (var menuItem in filteredMenuItems)
+                        {
+                            <RadzenPanelMenuItem Icon="@(menuItem.Icon)" Path="@(menuItem.Path)" Text="@(menuItem.Text)" />
+                        }
+                    </ChildContent>
+                </RadzenPanelMenu>
+            </ChildContent>
+        </RadzenSidebar>
+    </Authorized>
+</AuthorizeView>
+@code {
+    //protected UserTokenDto user = new UserTokenDto();
+    protected RadzenBody body0;
+    protected RadzenSidebar sidebar0;
+    string searchText = "";
+    List<MenuItem> menuItems = new List<MenuItem>
+    {
+        new MenuItem { Icon = "home", Path = "", Text = "Home" },
+        new MenuItem { Icon = "home", Path = "counter", Text = "Counter" },
+        new MenuItem { Icon = "home", Path = "fetchdata", Text = "Fetchdata" },
+        new MenuItem { Icon = "home", Path = "updateuser", Text = "Createuser" },
+        new MenuItem { Icon = "home", Path = "Login", Text = "Login" }
+    };
+
+    List<MenuItem> filteredMenuItems = new List<MenuItem>();
+    string Theme
+    {
+        get
+        {
+            return $"{ThemeState.CurrentTheme}.css";
+        }
+    }
+
+    protected async override void OnInitialized()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("Login");
+        }
+
+        filteredMenuItems = menuItems;
+    }
+
+    protected async System.Threading.Tasks.Task SidebarToggle0Click(dynamic args)
+    {
+        await InvokeAsync(() => { sidebar0.Toggle(); });
+
+        await InvokeAsync(() => { body0.Toggle(); });
+    }
+
+    async Task OnSearchTextChanged(ChangeEventArgs args)
+    {
+        searchText = args.Value.ToString();
+        await ApplyFilter();
+    }
+    async Task ApplyFilter()
+    {
+        filteredMenuItems = menuItems
+            .Where(item => item.Text.ToLower().Contains(searchText.ToLower()))
+            .ToList();
+
+    }
+}

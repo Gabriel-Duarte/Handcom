@@ -1,0 +1,15 @@
+﻿@page "/logout"
+@using Handcom.Web.Services.Interface
+
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        AuthService.Logout();
+        NavigationManager.NavigateTo("Login");
+    }
+}

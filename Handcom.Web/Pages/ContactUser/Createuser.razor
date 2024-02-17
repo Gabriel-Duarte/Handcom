@@ -1,0 +1,119 @@
+﻿@page "/createuser"
+
+@using Handcom.Web.Model.Request
+@using Handcom.Web.Services.Interface
+@using Microsoft.Extensions.Configuration
+@using System.Text.RegularExpressions;
+@using System.Text.Json;
+@using Radzen.Blazor
+
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+
+
+    <RadzenTemplateForm Data="@user" Submit="@((RegisterUserRequest args) => Submit(args))">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack>
+                <RadzenFieldset Text="Novo Usuario">
+                    <RadzenStack Gap="1rem">
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Name" />
+                                <RadzenRequiredValidator Component="Name" Text="Campo obrigatório" Popup Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Ana" @bind-Value="@user.Username" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Email" />
+                                <RadzenRequiredValidator Component="Email" Popup Text="Campo obrigatório" Style="position: absolute" />
+                                <RadzenEmailValidator Component="Email" Text="Fornecer um endereço de e-mail válido" Popup Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox Style="width: 100%;" Name="Email" Placeholder="maria@gcn.com" @bind-Value="@user.Email" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Senha" />
+                                <RadzenRequiredValidator Component="Password" Popup Text="Campo obrigatório" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenPassword Style="width: 100%;" Name="Password" Placeholder="********" @bind-Value="@user.Password" />
+                            </RadzenColumn>
+                        </RadzenRow>                       
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenStack>
+        </RadzenColumn>
+       
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="person_add" Text="Criar usuario" />
+        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Click="@Cancel" />
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    private RegisterUserRequest user = new RegisterUserRequest();
+
+    private async Task Submit(RegisterUserRequest args)
+    {
+        try
+        {
+          
+            var result = await AuthService.Register(args);
+
+            if (result.IsSuccess)
+            {
+
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success:",
+                        Detail = "Usuario criado",
+                        Duration = 4000
+                    });
+               
+                    DialogService.Close(result.Data);
+            }
+            else if (result.Errors is not null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Erro:",
+                            Detail = error,
+                            Duration = 4000
+                        });
+                }
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro:",
+                        Detail = "Erro ao criar usuario",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+   
+
+    void Cancel()
+    {
+        DialogService.Close(null);
+    }
+
+}
