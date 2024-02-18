@@ -12,6 +12,6 @@ namespace Handcom.Domain.DataAccess.Interfaces
 {
     public interface ITopicsRepository: IRepository<Topics>
     {
-        Task<Page<Topics>> GetTopicsAsync(TopicsPage companyAdminPage, CancellationToken cancellationToken);
+        Task<Page<Topics>> GetTopicsAsync(TopicsPage TopicsPage, CancellationToken cancellationToken);
     }
 }

@@ -3,7 +3,7 @@ using Handcom.Data.Data.Uow;
 using Handcom.Data.Data.Uow.Interface;
 using Handcom.Domain.DataAccess.Interfaces;
 using Handcom.Domain.Models;
-using Handcom.Ioc.Configuration.Token;
+using Handcom.Ioc.Configuration;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Services;
 using Handcom.Services.Services.Notifications;
@@ -35,12 +35,17 @@ namespace Handcom.Ioc.IoC
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-          
+
+            services.AddSingleton(MappingConfig.RegisterMaps().CreateMapper());
+
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<INotifierService, NotifierService>();
             services.AddScoped<ITopicsService, TopicsService>();
+            services.AddScoped<IPostsService, PostsService>();
+
             services.AddScoped<ITopicsRepository, TopicsRepository>();
+            services.AddScoped<IPostsRepository, PostsRepository>();
             services.AddScoped<IAspNetUserService, AspNetUserService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             

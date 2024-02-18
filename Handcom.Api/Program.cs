@@ -1,5 +1,5 @@
 using Handcom.Api.Configuration;
-using Handcom.Ioc.Configuration.Token;
+
 using Handcom.Ioc.IoC;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;

@@ -1,4 +1,5 @@
-﻿using Handcom.Domain.DataAccess.Interfaces;
+﻿using AutoMapper;
+using Handcom.Domain.DataAccess.Interfaces;
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Extensions;
@@ -14,22 +15,19 @@ namespace Handcom.Services.Services
 {
     public class TopicsService : BaseService, ITopicsService
     {
-        private const string SORT_BY_AVERAGECOMPANYRATING = "averageCompanyRating";
-        private const int DIVIDE_BY_FIVE = 5;
-
         private readonly ILogger<TopicsService> _logger;
-        private readonly IAspNetUserService _aspNetUserService;
         private readonly ITopicsRepository _topicsRepository;
+        private readonly IMapper _mapper;
 
         public TopicsService(
            INotifierService notifierService,
            ILogger<TopicsService> logger,
-           IAspNetUserService aspNetUserService,
-            ITopicsRepository topicsRepository) : base(notifierService)
+           ITopicsRepository topicsRepository,
+           IMapper mapper) : base(notifierService)
         {
             _logger = logger;
-            _aspNetUserService = aspNetUserService;
             _topicsRepository = topicsRepository;
+            _mapper = mapper;
         }
         public async Task<Page<Topics>> GetAsync(TopicsPage pagination, CancellationToken cancellationToken)
         {
@@ -53,12 +51,8 @@ namespace Handcom.Services.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                //var company = _mapper.Map<Company>(companyAdminRequestDto);
-                Topics topic = new()
-                {
-                    Name = topicsCreateRequestDto.Name
-                };
-
+                var topic = _mapper.Map<Topics>(topicsCreateRequestDto);
+               
                 return await _topicsRepository.CreateAsync(topic, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)

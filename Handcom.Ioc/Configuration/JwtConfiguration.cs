@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Handcom.Ioc.Configuration.Token
+namespace Handcom.Ioc.Configuration
 {
     public static class JwtConfiguration
     {

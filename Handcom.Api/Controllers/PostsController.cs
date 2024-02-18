@@ -2,45 +2,41 @@
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Request;
-using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Responses;
-using Handcom.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace Handcom.Api.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
-    public class TopicsController : MainController
+    public class PostsController : MainController
     {
-        private readonly ITopicsService _topicsService;
+        private readonly IPostsService _postsService;
 
-        public TopicsController(INotifierService notifierService, ITopicsService topicsService) : base(notifierService)
+        public PostsController(INotifierService notifierService, IPostsService postsService) : base(notifierService)
         {
-            _topicsService = topicsService;
+            _postsService = postsService;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Page<Topics>>> Get([FromQuery] TopicsPage topicsPage) =>
-           CustomResponse(await _topicsService.GetAsync(topicsPage, CancellationToken.None).ConfigureAwait(false));
+        public async Task<ActionResult<Page<Posts>>> Get([FromQuery] PostsPage PostsPage) =>
+           CustomResponse(await _postsService.GetAsync(PostsPage, CancellationToken.None).ConfigureAwait(false));
 
 
         [HttpPost()]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Topics>> Create(TopicsCreateRequestDto postsRequestDto)
+        public async Task<ActionResult<Posts>> Create(PostsCreateRequestDto postsRequestDto)
         {
             if (!ModelState.IsValid)
                 return CustomResponse(ModelState);
 
-            return CustomResponse(await _topicsService.CreateAsync(postsRequestDto, CancellationToken.None).ConfigureAwait(false));
+            return CustomResponse(await _postsService.CreateAsync(postsRequestDto, CancellationToken.None).ConfigureAwait(false));
         }
     }
-
 }

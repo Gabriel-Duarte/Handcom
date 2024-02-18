@@ -9,6 +9,6 @@ namespace Handcom.Domain.DataAccess.Pagination.Page
 {
     public class PostsPage : Pageable
     {
-        public string? Topic { get; set; }
+        public Guid? Topic { get; set; }
     }
 }

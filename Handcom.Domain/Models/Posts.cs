@@ -32,7 +32,7 @@ namespace Handcom.Domain.Models
         public Guid TopicId { get; set; }
 
         [Required(ErrorMessage = "O campo Inserido é obrigatório.")]
-        public string CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
    
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

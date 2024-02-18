@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Handcom.Domain.Dto.Extensions;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace Handcom.Services.Services
 {
