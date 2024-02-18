@@ -18,7 +18,6 @@ namespace Handcom.Services.Services
     {
         private readonly ITokenService _tokenService;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthService> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -34,7 +33,6 @@ namespace Handcom.Services.Services
         {
             _tokenService = tokenService;
             _userManager = userManager;
-            _roleManager = roleManager;
             _configuration = configuration;
             _logger = logger;
             _signInManager = signInManager;
@@ -53,9 +51,9 @@ namespace Handcom.Services.Services
 
                 ApplicationUser user = new()
                 {
-                    Email = registerUser.Email,
+                    Email = registerUser.Email.Trim(),
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = registerUser.Username
+                    UserName = registerUser.Username.Split()[0]
                 };
 
                 var userCreated = await _userManager.CreateAsync(user, registerUser.Password).ConfigureAwait(false);
