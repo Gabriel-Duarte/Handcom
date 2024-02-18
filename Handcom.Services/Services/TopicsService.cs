@@ -29,6 +29,7 @@ namespace Handcom.Services.Services
             _topicsRepository = topicsRepository;
             _mapper = mapper;
         }
+
         public async Task<Page<Topics>> GetAsync(TopicsPage pagination, CancellationToken cancellationToken)
         {
             try

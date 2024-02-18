@@ -10,9 +10,7 @@ namespace Handcom.Data.Data.Repositories
 {
     public class TopicsRepository : Repository<Topics>, ITopicsRepository
     {
-        private const int GET_TEN_ITEMS = 10;
-        private const int GET_TWENTY_ITEMS = 20;
-
+   
         public TopicsRepository(IUnitOfWork uow, AppDbContext context) : base(uow, context)
         {
         }

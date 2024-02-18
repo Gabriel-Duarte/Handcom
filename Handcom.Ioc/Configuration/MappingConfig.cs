@@ -17,6 +17,7 @@ namespace Handcom.Ioc.Configuration
             {
                 config.CreateMap<Topics, TopicsCreateRequestDto>().ReverseMap();
                 config.CreateMap<Posts, PostsCreateRequestDto>().ReverseMap();
+                config.CreateMap<Comments, CommentsCreateRequestDto>().ReverseMap();               
             });
         }
     }

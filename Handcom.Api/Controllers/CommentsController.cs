@@ -2,45 +2,41 @@
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Request;
-using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Responses;
-using Handcom.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace Handcom.Api.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
-    public class TopicsController : MainController
+    public class CommentsController : MainController
     {
-        private readonly ITopicsService _topicsService;
+        private readonly ICommentsService _commentsService;
 
-        public TopicsController(INotifierService notifierService, ITopicsService topicsService) : base(notifierService)
+        public CommentsController(INotifierService notifierService, ICommentsService commentsService) : base(notifierService)
         {
-            _topicsService = topicsService;
+            _commentsService = commentsService;
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Page<Topics>>> Get([FromQuery] TopicsPage topicsPage) =>
-           CustomResponse(await _topicsService.GetAsync(topicsPage, CancellationToken.None).ConfigureAwait(false));
+        public async Task<ActionResult<Page<Comments>>> Get([FromQuery] CommentsPage commentsPage) =>
+           CustomResponse(await _commentsService.GetAsync(commentsPage, CancellationToken.None).ConfigureAwait(false));
 
 
         [HttpPost()]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Topics>> Create(TopicsCreateRequestDto topicRequestDto)
+        public async Task<ActionResult<Comments>> Create(CommentsCreateRequestDto commentsRequestDto)
         {
             if (!ModelState.IsValid)
                 return CustomResponse(ModelState);
 
-            return CustomResponse(await _topicsService.CreateAsync(topicRequestDto, CancellationToken.None).ConfigureAwait(false));
+            return CustomResponse(await _commentsService.CreateAsync(commentsRequestDto, CancellationToken.None).ConfigureAwait(false));
         }
     }
-
 }

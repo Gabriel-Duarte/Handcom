@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace Handcom.Domain.DataAccess.Interfaces
 {
-    public interface ITopicsRepository: IRepository<Topics>
+    public interface ICommentsRepository : IRepository<Comments>
     {
-        Task<Page<Topics>> GetTopicsAsync(TopicsPage topicsPage, CancellationToken cancellationToken);
+        Task<Page<Comments>> GetCommentsAsync(CommentsPage commentsPage, CancellationToken cancellationToken);
     }
 }
