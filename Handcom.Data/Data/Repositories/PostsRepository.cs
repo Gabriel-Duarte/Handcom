@@ -3,7 +3,10 @@ using Handcom.Data.Data.Uow.Interface;
 using Handcom.Domain.DataAccess.Interfaces;
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
+using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,14 +18,14 @@ namespace Handcom.Data.Data.Repositories
 {
     public class PostsRepository : Repository<Posts>, IPostsRepository
     {
-        private const int GET_TEN_ITEMS = 10;
-        private const int GET_TWENTY_ITEMS = 20;
 
-        public PostsRepository(IUnitOfWork uow, AppDbContext context) : base(uow, context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public PostsRepository(IUnitOfWork uow, AppDbContext context, UserManager<ApplicationUser> userManager) : base(uow, context)
         {
+            _userManager = userManager;
         }
 
-        public async Task<Page<Posts>> GetPostsAsync(PostsPage PostsPage, CancellationToken cancellationToken)
+        public async Task<Page<PostsResponseDto>> GetPostsAsync(PostsPage PostsPage, CancellationToken cancellationToken)
         {
             try
             {
@@ -35,7 +38,23 @@ namespace Handcom.Data.Data.Repositories
                 var content = await PaginateAsync(queryData, PostsPage, cancellationToken).ConfigureAwait(false);
                 var total = await queryData.CountAsync(cancellationToken).ConfigureAwait(false);
 
-                return new Page<Posts>(total, content, PostsPage);
+                var result = content.Select(x => new PostsResponseDto
+                {
+                    Id= x.Id,
+                    Title =x.Title,
+                    Content= x.Content,
+                    ContentImage = x.ContentImage,
+                    CreatedAt = x.CreatedAt,
+                    TopicId =x.TopicId,
+                    AuthorId = x.AuthorId,
+                }).ToList();
+
+                foreach (var post in result)
+                {
+                    var user = await _userManager.FindByIdAsync(post.AuthorId.ToString());
+                     post.Author = user.UserName;                 
+                }
+                return new Page<PostsResponseDto>(total, result, PostsPage);
             }
             catch (Exception exception)
             {

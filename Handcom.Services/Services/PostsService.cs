@@ -3,12 +3,15 @@ using Handcom.Domain.DataAccess.Interfaces;
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Request;
+using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Services.Base;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 
 namespace Handcom.Services.Services
@@ -20,22 +23,24 @@ namespace Handcom.Services.Services
         private readonly IPostsRepository _postsRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public PostsService(
            INotifierService notifierService,
            ILogger<PostsService> logger,
            IAspNetUserService aspNetUserService,
            IPostsRepository postsRepository,
            UserManager<ApplicationUser> userManager,
-           IMapper mapper) : base(notifierService)
+           IMapper mapper,
+           IHttpContextAccessor httpContextAccessor) : base(notifierService)
         {
             _logger = logger;
             _aspNetUserService = aspNetUserService;
             _postsRepository = postsRepository;
             _mapper = mapper;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<Page<Posts>> GetAsync(PostsPage pagination, CancellationToken cancellationToken)
+        public async Task<Page<PostsResponseDto>> GetAsync(PostsPage pagination, CancellationToken cancellationToken)
         {
             try
             {
@@ -53,7 +58,7 @@ namespace Handcom.Services.Services
             {
                 _logger.LogError($"CompanyService, GetAsync: Request object => {SerializeObjectToJson(pagination)}");
                 _logger.LogError(ex.Message, ex);
-                return Notify("Ocorreu um erro.", new Page<Posts>());
+                return Notify("Ocorreu um erro.", new Page<PostsResponseDto>());
             }
         }
 
@@ -74,7 +79,7 @@ namespace Handcom.Services.Services
 
 
                 var posts = _mapper.Map<Posts>(postsCreateRequestDto);
-                posts.AuthorId =  _aspNetUserService.GetUserId().ToString();
+                posts.AuthorId = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
                 posts.CreatedAt = DateTime.Now;
 
                 return await _postsRepository.CreateAsync(posts, cancellationToken).ConfigureAwait(false);

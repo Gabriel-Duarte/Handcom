@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Handcom.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class PostsController : MainController
     {
         private readonly IPostsService _postsService;
@@ -21,13 +21,13 @@ namespace Handcom.Api.Controllers
             _postsService = postsService;
         }
 
-        [HttpGet]
+        [HttpGet()]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Page<Posts>>> Get([FromQuery] PostsPage PostsPage) =>
            CustomResponse(await _postsService.GetAsync(PostsPage, CancellationToken.None).ConfigureAwait(false));
 
-
+      
         [HttpPost()]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
