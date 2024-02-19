@@ -1,7 +1,163 @@
 ﻿@page "/"
+@page "/{id}"
 
-<PageTitle>Home</PageTitle>
+@using Handcom.Web.Model.Request
+@using Handcom.Web.Model.Responses
+@using Handcom.Web.Pages.Posts
+@using Handcom.Web.Pages.Comments
+@using Handcom.Web.Services.Interface
 
-<h1>Hello, world!</h1>
+@inject DialogService DialogService
+@inject IPostsServices _postsServices
 
-Welcome to your new app.
+
+<RadzenCard Style="box-shadow: none; border: 1px solid #dadce0; border-radius: 24px; overflow: hidden; display: flex; align-items: center;">
+    <RadzenTextBox Placeholder="Pesquise Autor ou Palavra Chave" Style="border: none; flex: 1; padding: 10px 20px;" @bind-Value="search" />
+    <RadzenButton Icon="search" Style="border-top-left-radius: 0; border-bottom-left-radius: 0;" Click=@Search />
+</RadzenCard>
+<br>
+@if (postsResponse.Count == 0)
+{
+    <RadzenButton Icon="add" Class="fixed-plus-button" Click="@OnCreatePost" />
+}
+<RadzenDataList WrapItems="true" AllowPaging="true" Data="@postsResponse" TItem="PostsResponse"
+                PageSize="@pageSize" Count="@count" PageChanged="PageChanged">
+    <Template Context="postResponse">
+
+        <button class="fixed-plus-button" @onclick="OnCreatePost">+</button>
+        
+        <div class="card-container">
+            <RadzenCard Style="width:300px; margin: auto;">
+
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenImage Path="Images/Mash.jpg" Style="width: 80px; height: 80px; border-radius: 50%" />
+                    <RadzenStack Gap="0">
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@(postResponse.Author)</b></RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+                <br>
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                    <RadzenStack Gap="0">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">@(postResponse.Title)</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2"><b>@(postResponse.Content)</b></RadzenText>
+                    </RadzenStack>
+                </RadzenStack>
+                @if (postResponse.ContentImage != null)
+                {
+                    <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+
+                    <div style="display: flex; justify-content: center; width: 100%;">
+                        <RadzenImage Path="@postResponse.ContentImage" Style="width: 300px; height: 300px;" />
+                    </div>
+                }
+                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
+                <RadzenRow>
+                    <RadzenColumn Size="4" Class="rz-text-align-start">
+                        <RadzenButton Icon="chat_bubble_outline" Click="()=>OnCreateComment(postResponse.Id)" />
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenCard>
+        </div>
+    </Template>
+</RadzenDataList>
+
+<RadzenPager ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right" Count="count" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    string pagingSummaryFormat = "Exibindo página {0} de {1} (total de {2} registros)";
+    int pageSize;
+    int count;
+    string search;
+
+    List<PostsResponse> postsResponse = new List<PostsResponse>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+    }
+
+    void Search()
+    {
+        GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0, Search = search });
+    }
+    void PageChanged(PagerEventArgs args)
+    {
+
+        PostsRequest postsRequest = new PostsRequest()
+            {
+                Page = args.PageIndex + 1,
+                Size = args.Top,
+                Sort = "",
+                Direction = 0
+            };
+
+        GetOrders(postsRequest);
+    }
+
+    async void GetOrders(PostsRequest postsRequest)
+    {
+        postsRequest.Topic = string.IsNullOrWhiteSpace(id) ? Guid.Empty : Guid.Parse(id);
+        var result = await _postsServices.GetListPosts(postsRequest);
+        if (result.IsSuccess)
+        {
+            count = result.Data.TotalElements;
+            pageSize = result.Data.Size;
+            postsResponse = result.Data.Content;
+            StateHasChanged();
+        }
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+
+        await base.OnParametersSetAsync();
+    }
+    public async Task OnCreatePost()
+    {
+        var dialogResult = await DialogService.OpenAsync<CreatePost>("", null,
+                                                            new DialogOptions()
+                                                                {
+                                                                    Width = ModalState.Small,
+                                                                    CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                                    Draggable = ModalState.Draggable,
+                                                                    Resizable = ModalState.Resizable,
+                                                                    Height = ModalState.Large,
+                                                                    ShowClose = ModalState.ShowClose
+                                                                });
+        if (dialogResult is not null)
+        {
+            await InvokeAsync(() => { StateHasChanged(); });
+            GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+        }
+
+    }
+    public async Task OnCreateComment(Guid postid)
+    {
+        var parameter = new Dictionary<string, object>() {
+                { "postid", postid }
+            };
+
+        var dialogResult = await DialogService.OpenAsync<PostComments>("Comentario", parameter,
+                                                   new DialogOptions()
+                                                       {
+                                                           Width = "25%",
+                                                           CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                           Draggable = ModalState.Draggable,
+                                                           Resizable = ModalState.Resizable,
+                                                           Height = ModalState.Medium,
+                                                           ShowClose = ModalState.ShowClose
+                                                       });
+        if (dialogResult is not null)
+        {
+            await InvokeAsync(() => { StateHasChanged(); });
+            GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+        }
+
+    }
+
+}
+
