@@ -1,0 +1,182 @@
+﻿@page "/createPost"
+@using Handcom.Web.Model.Request
+@using Handcom.Web.Model.Responses
+@using Handcom.Web.Services.Interface
+
+@inject IPostsServices _postsServices
+@inject ITopicsService _topicsService
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+
+<RadzenTemplateForm Data="@postsCreateRequest" Submit="@((PostsCreateRequest args) => Submit(args))">
+    <RadzenColumn Size="12" SizeMD="6">
+        <RadzenStack>
+            <RadzenFieldset Text="Criar postagem">
+                <RadzenStack Gap="1rem">
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Titulo" />
+                            <RadzenRequiredValidator Component="Title" Text="Campo obrigatório" Popup Style="position: absolute" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox Style="width: 100%;" Name="Title" Placeholder="Adicione titulo" @bind-Value="@postsCreateRequest.Title" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Conteudo" />
+                            <RadzenRequiredValidator Component="Content" Popup Text="Campo obrigatório" Style="position: absolute" />                          
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextArea Style="width: 100%;" Name="Content" Placeholder="Me diga o que está pensando " @bind-Value="@postsCreateRequest.Content" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                   <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Select Value" Component="DropDownBindValue" Style="margin-right: 8px; vertical-align: middle;" />
+                            <RadzenRequiredValidator Component="Topic" Popup Text="Campo obrigatório" Style="position: absolute" />                          
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDropDown AllowClear="true" @bind-Value=postsCreateRequest.TopicId
+                                            LoadData=@LoadData AllowFiltering="true"
+                                            Data=@topic TextProperty="Name" ValueProperty="Id" Style="width: 100%; max-width: 400px;" Name="Topic" />
+                        </RadzenColumn>                     
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenFieldset>
+        </RadzenStack>
+    </RadzenColumn>
+    <RadzenColumn Size="12" SizeMD="3">
+        <RadzenFieldset Text="Imagem">
+            <RadzenStack Gap="1rem">
+                @if (@postsCreateRequest.ContentImage is null)
+                {
+                    <RadzenImage id="purchaseImage"
+                                 Path="Images/NotImage.jpeg"
+                                 Style="width: 300px; height: 300px;" />
+                }
+                else
+                {
+                    <RadzenImage id="purchaseImage"
+                                 Path="@postsCreateRequest.ContentImage"
+                                 Style="width: 300px; height: 300px;" />
+                }
+            </RadzenStack>
+            <br />
+            <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Small" Click="@UpdateImage" Icon="add_a_photo" Text="Alterar Imagem" Style="text-align: left;" />
+        </RadzenFieldset>
+    </RadzenColumn>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="add_circle_outline" Text="Criar postagem" />
+        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Click="@Cancel" />
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    List<TopicsResponse> topic = new List<TopicsResponse>();
+    private PostsCreateRequest postsCreateRequest = new PostsCreateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        LoadTopic(null);
+
+    }
+    async void LoadData(LoadDataArgs args)
+    {
+        LoadTopic(args.Filter);
+    }
+    async void LoadTopic(string Search)
+    {
+        var result = await _topicsService.GetListTopics(new TopicsRequest
+            {
+                Page = 1,
+                Size = 30,
+                Sort = "",
+                Direction = 1,
+                Search = Search
+            });
+        if (result.IsSuccess)
+        {
+            topic = result.Data.Content;
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Submit(PostsCreateRequest args)
+    {
+        try
+        {
+
+            var result = await _postsServices.CreatePosts(args);
+
+            if (result.IsSuccess)
+            {
+
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success:",
+                        Detail = "Poste Publicado",
+                        Duration = 4000
+                    });
+
+                DialogService.Close(true);
+            }
+            else if (result.Errors is not null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Erro:",
+                            Detail = error,
+                            Duration = 4000
+                        });
+                }
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro:",
+                        Detail = "Erro ao Publicar",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    public async Task UpdateImage()
+    {
+        var dialogResult = await DialogService.OpenAsync<UpdateImage>("Defina uma nova imagem", null,
+                                                             new DialogOptions()
+                                                                 {
+                                                                     Width = "25%",
+                                                                     CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                                     Draggable = ModalState.Draggable,
+                                                                     Resizable = ModalState.Resizable,
+                                                                     Height = "45%",
+                                                                     ShowClose = ModalState.ShowClose
+                                                                 });
+        if (dialogResult is not null)
+        {
+            postsCreateRequest.ContentImage = dialogResult;
+        }
+     
+    
+
+    }
+
+    void Cancel()
+    {
+        DialogService.Close(null);
+    }
+
+}

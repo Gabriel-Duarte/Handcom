@@ -1,0 +1,61 @@
+﻿@page "/updateimage"
+@using Handcom.Web.Model.Extensions
+@using Microsoft.AspNetCore
+@using System.Text
+
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+
+<div class="container-fluid">
+    <div class="row px-3">
+        <div class="p-3">
+            
+            <RadzenCard>
+                <RadzenFileInput @bind-Value=@image.Base64 @bind-FileName=@image.FileName @bind-FileSize=@fileSize TValue="string" class="w-100"
+                                 ChooseText="Procurar Imagem" Change=@(args => OnChange(args, "FileInput")) Error=@(args => OnError(args, "FileInput")) />
+            </RadzenCard>
+            <br />
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
+                <RadzenButton Variant="Variant.Text" class="rz-text-secondary-color" Text="Cancelar" Click="@Cancel" />
+                <RadzenButton ButtonType="ButtonType.Submit" Variant="Variant.Text" Click="@UploadFile" Text="Enviar" />
+            </RadzenStack>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+
+    public ImageFile image = new ImageFile();
+    long? fileSize;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+    }
+
+    async Task UploadFile()
+    {
+        DialogService.Close(image.Base64);
+    }
+
+    void OnChange(string imageBase64, string name)
+    {
+        if (imageBase64 is not null)
+        {
+            var byteArray = Encoding.UTF8.GetBytes(imageBase64);
+        }
+
+    }
+    void Cancel()
+    {
+        DialogService.Close(null);
+    }
+    void OnError(UploadErrorEventArgs args, string name)
+    {
+
+    }
+}
