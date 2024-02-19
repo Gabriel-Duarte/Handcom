@@ -3,7 +3,9 @@ using Handcom.Data.Data.Uow.Interface;
 using Handcom.Domain.DataAccess.Interfaces;
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
+using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,12 +17,14 @@ namespace Handcom.Data.Data.Repositories
 {
     public class CommentsRepository : Repository<Comments>, ICommentsRepository
     {
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CommentsRepository(IUnitOfWork uow, AppDbContext context) : base(uow, context)
+        public CommentsRepository(IUnitOfWork uow, AppDbContext context, UserManager<ApplicationUser> userManager) : base(uow, context)
         {
+            _userManager = userManager;
         }
 
-        public async Task<Page<Comments>> GetCommentsAsync(CommentsPage commentsPage, CancellationToken cancellationToken)
+        public async Task<Page<CommentsResponseDto>> GetCommentsAsync(CommentsPage commentsPage, CancellationToken cancellationToken)
         {
             try
             {
@@ -32,8 +36,21 @@ namespace Handcom.Data.Data.Repositories
 
                 var content = await PaginateAsync(queryData, commentsPage, cancellationToken).ConfigureAwait(false);
                 var total = await queryData.CountAsync(cancellationToken).ConfigureAwait(false);
-
-                return new Page<Comments>(total, content, commentsPage);
+               
+                var result = content.Select(x => new CommentsResponseDto
+                {
+                    Id = x.Id,
+                    Content = x.Content,
+                    AuthorId = x.AuthorId,
+                    PostId = x.PostId,
+                    CreatedAt = x.CreatedAt,
+                }).ToList();
+                foreach (var comment in result)
+                {
+                    var user = await _userManager.FindByIdAsync(comment.AuthorId.ToString());
+                    comment.AuthorName = user.UserName;
+                }
+                return new Page<CommentsResponseDto>(total, result, commentsPage);
             }
             catch (Exception exception)
             {

@@ -2,6 +2,7 @@
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Request;
+using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Responses;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Handcom.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class CommentsController : MainController
     {
         private readonly ICommentsService _commentsService;
@@ -24,7 +25,7 @@ namespace Handcom.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Page<Comments>>> Get([FromQuery] CommentsPage commentsPage) =>
+        public async Task<ActionResult<Page<CommentsResponseDto>>> Get([FromQuery] CommentsPage commentsPage) =>
            CustomResponse(await _commentsService.GetAsync(commentsPage, CancellationToken.None).ConfigureAwait(false));
 
 

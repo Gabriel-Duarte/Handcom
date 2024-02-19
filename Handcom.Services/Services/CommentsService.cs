@@ -3,9 +3,11 @@ using Handcom.Domain.DataAccess.Interfaces;
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Request;
+using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Services.Base;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -21,21 +23,24 @@ namespace Handcom.Services.Services
         private readonly ICommentsRepository _commentsRepository;
         private readonly IMapper _mapper;
         private readonly IAspNetUserService _aspNetUserService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CommentsService(
            INotifierService notifierService,
            ILogger<CommentsService> logger,
            ICommentsRepository commentsRepository,
            IAspNetUserService aspNetUserService,
-           IMapper mapper) : base(notifierService)
+           IMapper mapper,
+           IHttpContextAccessor httpContextAccessor) : base(notifierService)
         {
             _logger = logger;
             _commentsRepository = commentsRepository;
             _mapper = mapper;
             _aspNetUserService = aspNetUserService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Page<Comments>> GetAsync(CommentsPage pagination, CancellationToken cancellationToken)
+        public async Task<Page<CommentsResponseDto>> GetAsync(CommentsPage pagination, CancellationToken cancellationToken)
         {
             try
             {
@@ -47,7 +52,7 @@ namespace Handcom.Services.Services
             {
                 _logger.LogError($"CompanyService, GetAsync: Request object => {SerializeObjectToJson(pagination)}");
                 _logger.LogError(ex.Message, ex);
-                return Notify("Ocorreu um erro.", new Page<Comments>());
+                return Notify("Ocorreu um erro.", new Page<CommentsResponseDto>());
             }
         }
 
@@ -64,7 +69,7 @@ namespace Handcom.Services.Services
                     return Notify("Post nao encontrado não encontrado.", new Comments());
 
                 var comments = _mapper.Map<Comments>(commentsCreateRequestDto);
-                comments.AuthorId = _aspNetUserService.GetUserId().ToString();
+                comments.AuthorId = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
                 comments.CreatedAt = DateTime.Now;
 
                 return await _commentsRepository.CreateAsync(comments, cancellationToken).ConfigureAwait(false);
