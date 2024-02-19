@@ -1,0 +1,129 @@
+﻿@page "/postcomments/{postid}"
+@using Handcom.Web.Model.Request
+@using Handcom.Web.Model.Responses
+@using Handcom.Web.Services.Interface
+
+@inject ICommentsService _commentsService;
+@inject NotificationService NotificationService
+@inject DialogService DialogService
+<div class="modal-content">
+    <!-- Conteúdo do Modal que pode rolar -->
+    <div class="modal-body">
+<RadzenDataList WrapItems="true" AllowPaging="false" Data="@commentsList" TItem="CommentsResponse">
+    <Template Context="comments">
+        <RadzenCard Style="width:300px;">
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenLabel Text=@comments.AuthorName Style="font-weight: bold;" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenLabel Style="width: 100%;" Text=@comments.Content />
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenCard>
+    </Template>
+</RadzenDataList>
+
+<RadzenPager ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right" Count="count" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
+    </div>
+        <div class="modal-footer">
+            <RadzenTextBox Style="flex-grow: 1;" Placeholder="Digite algo..." @bind-Value="newCommentsCreateRequest.Content" />
+        <RadzenButton Icon="send" Style="margin-left: -1px" Click="OnCreateComment" />
+        </div>
+    </div>
+
+@code {
+    [Parameter]
+    public Guid postid { get; set; }
+
+    string pagingSummaryFormat = "Exibindo página {0} de {1} (total de {2} registros)";
+    int pageSize;
+    int count;
+
+    List<CommentsResponse> commentsList = new List<CommentsResponse>();
+    CommentsCreateRequest newCommentsCreateRequest = new CommentsCreateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        GetOrders(new CommentsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+    }
+    async void OnCreateComment()
+    {
+        try
+        {
+            newCommentsCreateRequest.PostId = postid;
+            var result = await _commentsService.CreateComments(newCommentsCreateRequest);
+
+            if (result.IsSuccess)
+            {
+
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success:",
+                        Detail = "Comentario Publicado",
+                        Duration = 4000
+                    });
+                newCommentsCreateRequest.Content = "";
+                InvokeAsync(StateHasChanged);
+            }
+            else if (result.Errors is not null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Erro:",
+                            Detail = error,
+                            Duration = 4000
+                        });
+                }
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro:",
+                        Detail = "Erro ao Publicar",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+    }
+
+    void PageChanged(PagerEventArgs args)
+    {
+        CommentsRequest commentsRequest = new CommentsRequest()
+            {
+                Page = args.PageIndex + 1,
+                Size = args.Top,
+                Sort = "",
+                Direction = 0
+            };
+
+        GetOrders(commentsRequest);
+
+    }
+    async void GetOrders(CommentsRequest commentsRequest)
+    {
+        commentsRequest.Search = postid.ToString();
+        var result = await _commentsService.GetListComments(commentsRequest);
+        if (result.IsSuccess)
+        {
+            count = result.Data.TotalElements;
+            pageSize = result.Data.Size;
+            commentsList = result.Data.Content;
+            StateHasChanged();
+        }
+    }
+}
+
