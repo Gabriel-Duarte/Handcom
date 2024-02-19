@@ -1,0 +1,76 @@
+﻿.my-custom-centering-class {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+
+.card-container {
+    max-width: 350px; /* Limita a largura do contêiner do card */
+    margin: 0.5rem; /* Espaçamento ao redor do card para evitar que eles toquem uns aos outros */
+    display: inline-block; /* Faz com que o contêiner se comporte como um bloco, mas permita que ele fique lado a lado com outros elementos semelhantes */
+}
+
+.fixed-plus-button {
+    position: fixed; /* ou absolute, dependendo da sua necessidade */
+    right: 20px; /* Ajuste conforme necessário para posicionar na tela */
+    bottom: 20px; /* Ajuste conforme necessário para posicionar na tela */
+    width: 60px; /* Ou o tamanho que você deseja para o botão */
+    height: 60px; /* Deve ser o mesmo que a largura para ser um círculo perfeito */
+    border-radius: 50%; /* Isso fará o botão ser redondo */
+    line-height: 60px; /* Isso ajudará a centralizar o ícone/texto verticalmente */
+    font-size: 30px; /* Ajuste conforme necessário para o tamanho do ícone */
+    text-align: center; /* Isso centralizará o ícone/texto horizontalmente */
+    background-color: #007BFF; /* Cor de fundo do botão */
+    color: white; /* Cor do ícone/texto */
+    border: none; /* Remove a borda padrão */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra leve para um efeito 3D */
+    display: flex; /* Usando flex para centralizar o ícone */
+    justify-content: center; /* Alinha horizontalmente */
+    align-items: center; /* Alinha verticalmente */
+}
+
+.text-box-button-container {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white; /* Cor de fundo para destacar o contêiner */
+    padding: 10px; /* Espaçamento interno para afastar o conteúdo das bordas */
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1); /* Sombra para dar efeito elevado */
+    z-index: 1000; /* Garante que o contêiner fique acima de outros elementos da página */
+}
+
+/* Ajustes para o RadzenTextBox e RadzenButton, se necessário */
+.radzen-blazor .rz-textbox {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.radzen-blazor .rz-button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Defina a altura para manter tudo dentro do modal */
+}
+
+.modal-body {
+    overflow-y: auto; /* Habilita rolagem se o conteúdo for muito longo */
+    flex: 1; /* Ocupa todo o espaço disponível */
+}
+
+.modal-footer {
+    padding: 10px; /* Espaçamento interno */
+    background: #f7f7f7; /* Cor de fundo da barra de entrada */
+    border-top: 1px solid #e7e7e7; /* Linha de separação */
+    display: flex; /* Usa flexbox para alinhar os filhos horizontalmente */
+    align-items: center; /* Centraliza verticalmente os elementos filhos */
+}

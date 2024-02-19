@@ -1,6 +1,10 @@
 ﻿@using Handcom.Web.Configuration
 @using Handcom.Web.Model.Extensions
+@using Handcom.Web.Model.Request
+@using Handcom.Web.Pagination.Base
+@using Handcom.Web.Services.Interface
 
+@inject ITopicsService _topicsService
 @inject ThemeState ThemeState
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider _authenticationStateProvider
@@ -115,8 +119,7 @@
         {
             NavigationManager.NavigateTo("Login");
         }
-
-        filteredMenuItems = menuItems;
+        await LoadMenu(new TopicsRequest());
     }
 
     protected async System.Threading.Tasks.Task SidebarToggle0Click(dynamic args)
@@ -128,14 +131,35 @@
 
     async Task OnSearchTextChanged(ChangeEventArgs args)
     {
-        searchText = args.Value.ToString();
-        await ApplyFilter();
-    }
-    async Task ApplyFilter()
-    {
-        filteredMenuItems = menuItems
-            .Where(item => item.Text.ToLower().Contains(searchText.ToLower()))
-            .ToList();
+        TopicsRequest filter = new TopicsRequest();
+        filter.Search = args.Value.ToString();
 
+        await LoadMenu(filter);
     }
+
+
+    async Task LoadMenu(TopicsRequest args)
+    {
+        args.Page = 1;
+        args.Size = 30;
+        args.Sort = "";
+        args.Direction = 1;
+
+        var TopicResult = await _topicsService.GetListTopics(args); 
+        if (TopicResult.IsSuccess)
+        {
+            List<MenuItem> menuItems = new List<MenuItem>();
+
+            TopicResult.Data.Content.ForEach(x =>
+            {
+                // Cria um novo MenuItem para cada item em Content e adiciona à lista menuItems
+                menuItems.Add(new MenuItem { Icon = "star_rate", Path = $"/{x.Id.ToString()}", Text = x.Name });
+            });
+            menuItems.Add(new MenuItem { Icon = "home", Path = "/", Text = "Todos" });
+            filteredMenuItems = menuItems;
+        }
+     
+        StateHasChanged();
+    }
+
 }

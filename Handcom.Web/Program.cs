@@ -14,15 +14,10 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-
-builder.Services.AddScoped<ThemeState>();
-builder.Services.AddRadzenComponents();
-builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
-builder.Services.AddScoped<IAuthService, AuthService> ();
-builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHttpClient("ApiHandcom", options =>
 {
-    options.BaseAddress = new Uri("https://localhost:7008/");
+    options.BaseAddress = new Uri("https://localhost:44302/");
 });
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });

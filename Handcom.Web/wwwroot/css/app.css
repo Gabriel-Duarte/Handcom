@@ -1,4 +1,3 @@
-@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -102,10 +101,21 @@ a, .btn-link {
         content: var(--blazor-load-percentage-text, "Loading");
     }
 
-.my-custom-centering-class {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%; 
+.fixed-plus-button {
+    position: fixed; /* ou absolute, dependendo da sua necessidade */
+    right: 20px; /* Ajuste conforme necessário para posicionar na tela */
+    bottom: 20px; /* Ajuste conforme necessário para posicionar na tela */
+    width: 60px; /* Ou o tamanho que você deseja para o botão */
+    height: 60px; /* Deve ser o mesmo que a largura para ser um círculo perfeito */
+    border-radius: 50%; /* Isso fará o botão ser redondo */
+    line-height: 60px; /* Isso ajudará a centralizar o ícone/texto verticalmente */
+    font-size: 30px; /* Ajuste conforme necessário para o tamanho do ícone */
+    text-align: center; /* Isso centralizará o ícone/texto horizontalmente */
+    background-color: #007BFF; /* Cor de fundo do botão */
+    color: white; /* Cor do ícone/texto */
+    border: none; /* Remove a borda padrão */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra leve para um efeito 3D */
+    display: flex; /* Usando flex para centralizar o ícone */
+    justify-content: center; /* Alinha horizontalmente */
+    align-items: center; /* Alinha verticalmente */
 }

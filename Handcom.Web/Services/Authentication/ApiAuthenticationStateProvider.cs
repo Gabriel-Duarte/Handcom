@@ -25,7 +25,7 @@ namespace Handcom.Web.Services.Authentication
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var savedToken = await _localStorage.GetItemAsync<string>("authToken");
+            var savedToken = await _localStorage.GetItemAsync<string>("AccessToken");
             var expirationToken = await _localStorage.GetItemAsync<string>("tokenExpiration");
 
             if (string.IsNullOrWhiteSpace(savedToken) || TokenExpirou(expirationToken))
@@ -33,7 +33,7 @@ namespace Handcom.Web.Services.Authentication
                 await RefreshToken(); // Tenta renovar o token se estiver expirado
             }
 
-            savedToken = await _localStorage.GetItemAsync<string>("authToken"); // Obtém o token após a possível renovação
+            savedToken = await _localStorage.GetItemAsync<string>("AccessToken"); // Obtém o token após a possível renovação
 
             if (string.IsNullOrWhiteSpace(savedToken))
             {
@@ -58,7 +58,7 @@ namespace Handcom.Web.Services.Authentication
 
         public async void MarkUserAsLoggedOut()
         {
-            await _localStorage.RemoveItemAsync("authToken");
+            await _localStorage.RemoveItemAsync("AccessToken");
             await _localStorage.RemoveItemAsync("RefreshToken");
             await _localStorage.RemoveItemAsync("tokenExpiration");
             await _localStorage.RemoveItemAsync("User");
@@ -69,7 +69,7 @@ namespace Handcom.Web.Services.Authentication
 
         private bool TokenExpirou(string dataToken)
         {
-            DateTime dataAtualUtc = DateTime.UtcNow;
+            DateTime dataAtualUtc = DateTime.Now;
             DateTime dataExpiracao;
 
             // Array de formatos de data que você deseja suportar
@@ -151,12 +151,10 @@ namespace Handcom.Web.Services.Authentication
                     return;
                 }
 
-                var RefreshTokenAsJson = JsonSerializer.Serialize(refreshToken);
-                var requestContent = new StringContent(RefreshTokenAsJson, Encoding.UTF8, "application/json");
+                var refreshTokenCreateRequestDtoAsJson = JsonSerializer.Serialize(refreshToken);
+                var requestContent = new StringContent(refreshTokenCreateRequestDtoAsJson, Encoding.UTF8, "application/json");
 
-                // Criar objeto para enviar no corpo da solicitação POST
-                var requestData = new { refreshToken };
-                var response = await httpClient.PostAsJsonAsync("api/Auth/Refresh-Token", requestContent);
+                var response = await httpClient.PostAsync("api/Auth/Refresh-Token", requestContent);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -168,7 +166,7 @@ namespace Handcom.Web.Services.Authentication
                                   });
 
                     // Atualizar o token no armazenamento local
-                    await _localStorage.SetItemAsync("authToken", newToken.AccessToken);
+                    await _localStorage.SetItemAsync("AccessToken", newToken.AccessToken);
                     await _localStorage.SetItemAsync("RefreshToken", newToken.RefreshToken);
 
                     // Atualizar a expiração (ajuste conforme necessário)
