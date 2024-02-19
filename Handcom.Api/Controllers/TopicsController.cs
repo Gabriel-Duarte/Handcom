@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Handcom.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
     public class TopicsController : MainController
     {
         private readonly ITopicsService _topicsService;
@@ -24,7 +23,7 @@ namespace Handcom.Api.Controllers
             _topicsService = topicsService;
         }
 
-        [HttpGet]
+        [HttpGet()]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Page<Topics>>> Get([FromQuery] TopicsPage topicsPage) =>
