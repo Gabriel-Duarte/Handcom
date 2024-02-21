@@ -1,7 +1,8 @@
 ﻿@page "/updateuserprofile"
+
 @using Handcom.Web.Model.Request
 @using Handcom.Web.Model.Responses
-
+@using Handcom.Web.Pages.Image
 @using Handcom.Web.Pages.Posts
 @using Handcom.Web.Services.Interface
 
@@ -10,64 +11,64 @@
 @inject DialogService DialogService
 
 <RadzenTemplateForm Data="@userProfile" Submit="@((UserProfileResponse args) => Submit(args))">
-        <RadzenRow>
-    <RadzenColumn Size="12" SizeMD="6">
-        <RadzenStack>
-            <RadzenFieldset Text="Novo Usuario">
-                <RadzenStack Gap="1rem">
-
-                    <RadzenRow AlignItems="AlignItems.Center">
-                        <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Name" />
-                            <RadzenRequiredValidator Component="Name" Text="Campo obrigatório" Popup Style="position: absolute" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Ana" @bind-Value="@userProfile.UserName" />
-                        </RadzenColumn>
-                    </RadzenRow> 
-                    <RadzenRow AlignItems="AlignItems.Center">
-                        <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Email" />
-                            <RadzenRequiredValidator Component="Email" Popup Text="Campo obrigatório" Style="position: absolute" />
-                            <RadzenEmailValidator Component="Email" Text="Fornecer um endereço de e-mail válido" Popup Style="position: absolute" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Style="width: 100%;" Name="Email" Placeholder="maria@gcn.com" @bind-Value="@userProfile.Email" Disabled />
-                        </RadzenColumn>
-                    </RadzenRow>
-                </RadzenStack>
-            </RadzenFieldset>
-        </RadzenStack>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="3">
-        <RadzenFieldset Text="Imagem">
-            <RadzenStack Gap="1rem">
-                @if (@userProfile.ImagePath is null)
-                {
-                    <RadzenImage id="purchaseImage"
-                                 Path="Images/NotImage.jpeg"
-                                 Style="width: 300px; height: 300px; border-radius: 50%" />
-                }
-                else
-                {
-                    <RadzenImage id="purchaseImage"
-                                 Path="@userProfile.ImagePath"
-                                 Style="width: 300px; height: 300px; border-radius: 50%"  />
-                }
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack>
+                <RadzenFieldset Text="Informações">
+                    <RadzenStack Gap="1rem">
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Nome" />
+                                <RadzenRequiredValidator Component="Name" Text="Campo obrigatório" Popup Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Ana" @bind-Value="@userProfile.UserName" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Email" />
+                                <RadzenRequiredValidator Component="Email" Popup Text="Campo obrigatório" Style="position: absolute" />
+                                <RadzenEmailValidator Component="Email" Text="Fornecer um endereço de e-mail válido" Popup Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox Style="width: 100%;" Name="Email" Placeholder="maria@gcn.com" @bind-Value="@userProfile.Email" Disabled />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
             </RadzenStack>
-            <br />
-            <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Small" Click="@UpdateImage" Icon="add_a_photo" Text="Alterar Imagem" Style="text-align: left;" />
-        </RadzenFieldset>
-    </RadzenColumn>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="3">
+            <RadzenFieldset Text="Imagem">
+                <RadzenStack Gap="1rem">
+                    @if (@userProfile.ImagePath is null)
+                    {
+                        <RadzenImage id="purchaseImage"
+                                     Path="Images/NotImage.jpeg"
+                                     Style="width: 300px; height: 300px; border-radius: 50%" />
+                    }
+                    else
+                    {
+                        <RadzenImage id="purchaseImage"
+                                     Path="@userProfile.ImagePath"
+                                     Style="width: 300px; height: 300px; border-radius: 50%" />
+                    }
+                </RadzenStack>
+                <br />
+                <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Small" Click="@UpdateImage" Icon="add_a_photo" Text="Alterar Imagem" Style="text-align: left;" />
+            </RadzenFieldset>
+        </RadzenColumn>
     </RadzenRow>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="person_add" Text="Criar usuario" />
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Salvar" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
 
     UserProfileResponse userProfile = new UserProfileResponse();
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -76,8 +77,9 @@
         {
             userProfile = result.Data;
         }
-       
+
     }
+
     private async Task Submit(UserProfileResponse args)
     {
         try

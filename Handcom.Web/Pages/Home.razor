@@ -10,7 +10,6 @@
 @inject DialogService DialogService
 @inject IPostsServices _postsServices
 
-
 <RadzenCard Style="box-shadow: none; border: 1px solid #dadce0; border-radius: 24px; overflow: hidden; display: flex; align-items: center;">
     <RadzenTextBox Placeholder="Pesquise Autor ou Palavra Chave" Style="border: none; flex: 1; padding: 10px 20px;" @bind-Value="search" />
     <RadzenButton Icon="search" Style="border-top-left-radius: 0; border-bottom-left-radius: 0;" Click=@Search />
@@ -25,7 +24,7 @@
     <Template Context="postResponse">
 
         <button class="fixed-plus-button" @onclick="OnCreatePost">+</button>
-        
+
         <div class="card-container">
             <RadzenCard Style="width:300px; margin: auto;">
 
@@ -38,7 +37,7 @@
                     {
                         <RadzenImage Path="@postResponse.AuthorImage" style="border-radius: 16px; height: 32px; width: 32px" />
                     }
-                   
+
                     <RadzenStack Gap="0">
                         <RadzenText TextStyle="TextStyle.Body1"><b>@(postResponse.Author)</b></RadzenText>
                     </RadzenStack>
@@ -53,7 +52,6 @@
                 @if (postResponse.ContentImage != null)
                 {
                     <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;" />
-
                     <div style="display: flex; justify-content: center; width: 100%;">
                         <RadzenImage Path="@postResponse.ContentImage" Style="width: 300px; height: 300px;" />
                     </div>
@@ -70,7 +68,9 @@
 </RadzenDataList>
 
 <RadzenPager ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right" Count="count" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
+
 @code {
+
     [Parameter]
     public string id { get; set; }
 
@@ -78,18 +78,17 @@
     int pageSize;
     int count;
     string search;
-
     List<PostsResponse> postsResponse = new List<PostsResponse>();
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+        GetPosts(new PostsRequest { Page = 1, Size = 8, Sort = "", Direction = 0 });
     }
 
     void Search()
     {
-        GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0, Search = search });
+        GetPosts(new PostsRequest { Page = 1, Size = 8, Sort = "", Direction = 0, Search = search });
     }
     void PageChanged(PagerEventArgs args)
     {
@@ -102,10 +101,10 @@
                 Direction = 0
             };
 
-        GetOrders(postsRequest);
+        GetPosts(postsRequest);
     }
 
-    async void GetOrders(PostsRequest postsRequest)
+    async void GetPosts(PostsRequest postsRequest)
     {
         postsRequest.Topic = string.IsNullOrWhiteSpace(id) ? Guid.Empty : Guid.Parse(id);
         var result = await _postsServices.GetListPosts(postsRequest);
@@ -118,12 +117,14 @@
         }
 
     }
+
     protected override async Task OnParametersSetAsync()
     {
-        GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+        GetPosts(new PostsRequest { Page = 1, Size = 8, Sort = "", Direction = 0 });
 
         await base.OnParametersSetAsync();
     }
+
     public async Task OnCreatePost()
     {
         var dialogResult = await DialogService.OpenAsync<CreatePost>("", null,
@@ -138,8 +139,7 @@
                                                                 });
         if (dialogResult is not null)
         {
-            await InvokeAsync(() => { StateHasChanged(); });
-            GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+            GetPosts(new PostsRequest { Page = 1, Size = 8, Sort = "", Direction = 0 });
         }
 
     }
@@ -161,8 +161,7 @@
                                                        });
         if (dialogResult is not null)
         {
-            await InvokeAsync(() => { StateHasChanged(); });
-            GetOrders(new PostsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+            GetPosts(new PostsRequest { Page = 1, Size = 8, Sort = "", Direction = 0 });
         }
 
     }

@@ -10,6 +10,7 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inherits LayoutComponentBase
 @inject ILocalStorageService _localStorage;
+
 <RadzenDialog />
 <RadzenNotification />
 <RadzenTooltip />
@@ -25,6 +26,7 @@
         }
     </style>
 }
+
 <RadzenHeader>
     <ChildContent>
         <AuthorizeView>
@@ -33,14 +35,13 @@
                     <div class="col-6 d-flex align-items-center">
                         <RadzenSidebarToggle Click="@SidebarToggle0Click">
                         </RadzenSidebarToggle>
-
                         <RadzenImage Path="Images/GDCS.jpg" Style="width: 10%;" />
                     </div>
                     <div class="col-6 d-flex align-items-center justify-content-end">
                         <RadzenProfileMenu Style="position: relative; z-index: 1000;">
                             <ChildContent>
                                 <RadzenProfileMenuItem Text="Minha Conta" Icon="account_circle" Path="updateuserprofile" />
-                                <RadzenProfileMenuItem Text="Topic" Icon="power_settings_new" Path="topicindex" />
+                                <RadzenProfileMenuItem Text="Topic" Icon="star_rate" Path="topicindex" />
                                 <RadzenProfileMenuItem Text="Sair" Icon="power_settings_new" Path="logout" />
                                 
                             </ChildContent>
@@ -56,20 +57,9 @@
 
                             </Template>
                         </RadzenProfileMenu>
-
-                        @*    </Authorized>
-                        <NotAuthorized>
-                        <RadzenButton Text="Login" style="margin-right: 1cm;" Click="@(() => NavigationManager.NavigateTo("login"))" />
-                        </NotAuthorized>
-                        </AuthorizeView>  *@
-
                     </div>
                 </div>
             </Authorized>
-
-            <NotAuthorized>
-
-            </NotAuthorized>
         </AuthorizeView>
     </ChildContent>
 </RadzenHeader>
@@ -98,6 +88,7 @@
     </Authorized>
 </AuthorizeView>
 @code {
+
     protected UserToken user = new UserToken();
     protected RadzenBody body0;
     protected RadzenSidebar sidebar0;
@@ -147,7 +138,7 @@
     async Task LoadMenu(TopicsRequest args)
     {
         args.Page = 1;
-        args.Size = 30;
+        args.Size = 10;
         args.Sort = "";
         args.Direction = 1;
 

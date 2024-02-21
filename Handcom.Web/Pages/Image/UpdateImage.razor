@@ -9,10 +9,9 @@
 <div class="container-fluid">
     <div class="row px-3">
         <div class="p-3">
-            
             <RadzenCard>
                 <RadzenFileInput @bind-Value=@image.Base64 @bind-FileName=@image.FileName @bind-FileSize=@fileSize TValue="string" class="w-100"
-                                 ChooseText="Procurar Imagem" Change=@(args => OnChange(args, "FileInput")) Error=@(args => OnError(args, "FileInput")) />
+                                 ChooseText="Procurar Imagem" Change=@(args => OnChange(args, "FileInput")) />
             </RadzenCard>
             <br />
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
@@ -23,13 +22,10 @@
     </div>
 </div>
 
-
-
 @code {
 
     public ImageFile image = new ImageFile();
     long? fileSize;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,12 +46,10 @@
         }
 
     }
+
     void Cancel()
     {
         DialogService.Close(null);
     }
-    void OnError(UploadErrorEventArgs args, string name)
-    {
 
-    }
 }

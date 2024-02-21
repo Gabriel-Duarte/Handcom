@@ -1,6 +1,8 @@
 ﻿@page "/createPost"
+
 @using Handcom.Web.Model.Request
 @using Handcom.Web.Model.Responses
+@using Handcom.Web.Pages.Image
 @using Handcom.Web.Services.Interface
 
 @inject IPostsServices _postsServices
@@ -26,22 +28,22 @@
                     <RadzenRow AlignItems="AlignItems.Center">
                         <RadzenColumn Size="12" SizeMD="4">
                             <RadzenLabel Text="Conteudo" />
-                            <RadzenRequiredValidator Component="Content" Popup Text="Campo obrigatório" Style="position: absolute" />                          
+                            <RadzenRequiredValidator Component="Content" Popup Text="Campo obrigatório" Style="position: absolute" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
                             <RadzenTextArea Style="width: 100%;" Name="Content" Placeholder="Me diga o que está pensando " @bind-Value="@postsCreateRequest.Content" />
                         </RadzenColumn>
                     </RadzenRow>
-                   <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenRow AlignItems="AlignItems.Center">
                         <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Select Value" Component="DropDownBindValue" Style="margin-right: 8px; vertical-align: middle;" />
-                            <RadzenRequiredValidator Component="Topic" Popup Text="Campo obrigatório" Style="position: absolute" />                          
+                            <RadzenLabel Text="Tópico" Component="Topic" Style="margin-right: 8px; vertical-align: middle;" />
+                            <RadzenRequiredValidator Component="Topic" Popup Text="Campo obrigatório" Style="position: absolute" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
                             <RadzenDropDown AllowClear="true" @bind-Value=postsCreateRequest.TopicId
                                             LoadData=@LoadData AllowFiltering="true"
                                             Data=@topic TextProperty="Name" ValueProperty="Id" Style="width: 100%; max-width: 400px;" Name="Topic" />
-                        </RadzenColumn>                     
+                        </RadzenColumn>
                     </RadzenRow>
                 </RadzenStack>
             </RadzenFieldset>
@@ -155,7 +157,7 @@
 
     public async Task UpdateImage()
     {
-        var dialogResult = await DialogService.OpenAsync<UpdateImage>("Defina uma nova imagem", null,
+        var dialogResult = await DialogService.OpenAsync<UpdateImage>("Selecione uma nova imagem", null,
                                                              new DialogOptions()
                                                                  {
                                                                      Width = "25%",

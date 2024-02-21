@@ -1,4 +1,5 @@
 ﻿@page "/topiccreate"
+
 @using Handcom.Web.Model.Request
 @using Handcom.Web.Services.Interface
 
@@ -10,24 +11,23 @@
 <RadzenTemplateForm Data="@topicCreateRequest" Submit="@((TopicCreateRequest args) => Submit(args))">
     <RadzenColumn Size="12" SizeMD="6">
         <RadzenStack>
-            <RadzenFieldset Text="Novo Usuario">
+            <RadzenFieldset Text="Criar Tópico">
                 <RadzenStack Gap="1rem">
                     <RadzenRow AlignItems="AlignItems.Center">
                         <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Name" />
+                            <RadzenLabel Text="Nome" />
                             <RadzenRequiredValidator Component="Name" Text="Campo obrigatório" Popup Style="position: absolute" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Ana" @bind-Value="@topicCreateRequest.Name" />
+                            <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Academia" @bind-Value="@topicCreateRequest.Name" />
                         </RadzenColumn>
-                    </RadzenRow>                
+                    </RadzenRow>
                 </RadzenStack>
             </RadzenFieldset>
         </RadzenStack>
     </RadzenColumn>
-
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="person_add" Text="Criar usuario" />
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Criar tópico" />
         <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Click="@Cancel" />
     </RadzenStack>
 </RadzenTemplateForm>
@@ -39,12 +39,10 @@
     {
         try
         {
-
             var result = await _topicsService.TopicCreate(args);
 
             if (result.IsSuccess)
             {
-
                 NotificationService.Notify(new NotificationMessage
                     {
                         Severity = NotificationSeverity.Success,
