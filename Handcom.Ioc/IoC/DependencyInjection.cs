@@ -44,6 +44,7 @@ namespace Handcom.Ioc.IoC
             services.AddScoped<ITopicsService, TopicsService>();
             services.AddScoped<IPostsService, PostsService>();
             services.AddScoped<ICommentsService, CommentsService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
 
             services.AddScoped<ICommentsRepository, CommentsRepository>();
             services.AddScoped<ITopicsRepository, TopicsRepository>();

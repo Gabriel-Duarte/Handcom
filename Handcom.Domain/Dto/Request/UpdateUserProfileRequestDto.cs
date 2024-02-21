@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace Handcom.Domain.Dto.Request
 {
-    public class TopicsCreateRequestDto
+    public class UpdateUserProfileRequestDto
     {
         [Required(ErrorMessage = "O Nome é obrigatório.")]
-        public string Name { get; set; }
+        public string UserName { get; set; }
+        public string? ImagePath { get; set; }
     }
 }

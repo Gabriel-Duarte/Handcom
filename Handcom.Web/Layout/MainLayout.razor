@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inherits LayoutComponentBase
+@inject ILocalStorageService _localStorage;
 <RadzenDialog />
 <RadzenNotification />
 <RadzenTooltip />
@@ -26,26 +27,33 @@
 }
 <RadzenHeader>
     <ChildContent>
-                  <AuthorizeView>
+        <AuthorizeView>
             <Authorized>
                 <div class="row justify-content-start align-items-center">
                     <div class="col-6 d-flex align-items-center">
                         <RadzenSidebarToggle Click="@SidebarToggle0Click">
                         </RadzenSidebarToggle>
+
                         <RadzenImage Path="Images/GDCS.jpg" Style="width: 10%;" />
                     </div>
                     <div class="col-6 d-flex align-items-center justify-content-end">
-
-              
-                        <RadzenProfileMenu>
+                        <RadzenProfileMenu Style="position: relative; z-index: 1000;">
                             <ChildContent>
-                                <RadzenProfileMenuItem Text="Minha Conta" Icon="account_circle" Path="updateuser" />
+                                <RadzenProfileMenuItem Text="Minha Conta" Icon="account_circle" Path="updateuserprofile" />
+                                <RadzenProfileMenuItem Text="Topic" Icon="power_settings_new" Path="topicindex" />
                                 <RadzenProfileMenuItem Text="Sair" Icon="power_settings_new" Path="logout" />
-                                <RadzenLabel Text="@($"{"Versão: " + (System.Reflection.Assembly.GetEntryAssembly().GetName().Version)}")" />
+                                
                             </ChildContent>
                             <Template>
-                                <RadzenImage Path="Images/Mash.jpg" style="border-radius: 16px; height: 32px; width: 32px">
-                                </RadzenImage>
+                                @if (user.UserImage is null)
+                                {
+                                    <RadzenImage Path="Images/Mash.jpg" style="border-radius: 16px; height: 32px; width: 32px"/>
+                                }
+                                else
+                                {
+                                    <RadzenImage Path="@user.UserImage" style="border-radius: 16px; height: 32px; width: 32px" />
+                                }
+
                             </Template>
                         </RadzenProfileMenu>
 
@@ -54,7 +62,7 @@
                         <RadzenButton Text="Login" style="margin-right: 1cm;" Click="@(() => NavigationManager.NavigateTo("login"))" />
                         </NotAuthorized>
                         </AuthorizeView>  *@
-                  
+
                     </div>
                 </div>
             </Authorized>
@@ -90,18 +98,10 @@
     </Authorized>
 </AuthorizeView>
 @code {
-    //protected UserTokenDto user = new UserTokenDto();
+    protected UserToken user = new UserToken();
     protected RadzenBody body0;
     protected RadzenSidebar sidebar0;
     string searchText = "";
-    List<MenuItem> menuItems = new List<MenuItem>
-    {
-        new MenuItem { Icon = "home", Path = "", Text = "Home" },
-        new MenuItem { Icon = "home", Path = "counter", Text = "Counter" },
-        new MenuItem { Icon = "home", Path = "fetchdata", Text = "Fetchdata" },
-        new MenuItem { Icon = "home", Path = "updateuser", Text = "Createuser" },
-        new MenuItem { Icon = "home", Path = "Login", Text = "Login" }
-    };
 
     List<MenuItem> filteredMenuItems = new List<MenuItem>();
     string Theme
@@ -118,8 +118,15 @@
         if (!authState.User.Identity.IsAuthenticated)
         {
             NavigationManager.NavigateTo("Login");
+           
         }
-        await LoadMenu(new TopicsRequest());
+        else
+        {
+            user = await _localStorage.GetItemAsync<UserToken>("User");
+            StateHasChanged();
+            await LoadMenu(new TopicsRequest());
+        }
+       
     }
 
     protected async System.Threading.Tasks.Task SidebarToggle0Click(dynamic args)
@@ -137,7 +144,6 @@
         await LoadMenu(filter);
     }
 
-
     async Task LoadMenu(TopicsRequest args)
     {
         args.Page = 1;
@@ -145,20 +151,19 @@
         args.Sort = "";
         args.Direction = 1;
 
-        var TopicResult = await _topicsService.GetListTopics(args); 
+        var TopicResult = await _topicsService.GetListTopics(args);
         if (TopicResult.IsSuccess)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
             TopicResult.Data.Content.ForEach(x =>
             {
-                // Cria um novo MenuItem para cada item em Content e adiciona à lista menuItems
                 menuItems.Add(new MenuItem { Icon = "star_rate", Path = $"/{x.Id.ToString()}", Text = x.Name });
             });
             menuItems.Add(new MenuItem { Icon = "home", Path = "/", Text = "Todos" });
             filteredMenuItems = menuItems;
         }
-     
+
         StateHasChanged();
     }
 

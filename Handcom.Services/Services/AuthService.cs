@@ -195,7 +195,8 @@ namespace Handcom.Services.Services
                 UserToken = new UserTokenDto()
                 {
                   Email = user.Email,
-                  Id = user.Id
+                  Id = user.Id,
+                 UserImage = user.ImagePath
                 }
             };
         }

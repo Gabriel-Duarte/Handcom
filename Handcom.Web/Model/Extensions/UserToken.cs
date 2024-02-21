@@ -4,5 +4,6 @@
     {
         public string Id { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public string UserImage { get; set; } = null!;
     }
 }

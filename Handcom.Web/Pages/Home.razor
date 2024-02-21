@@ -18,7 +18,7 @@
 <br>
 @if (postsResponse.Count == 0)
 {
-    <RadzenButton Icon="add" Class="fixed-plus-button" Click="@OnCreatePost" />
+    <button class="fixed-plus-button" @onclick="OnCreatePost">+</button>
 }
 <RadzenDataList WrapItems="true" AllowPaging="true" Data="@postsResponse" TItem="PostsResponse"
                 PageSize="@pageSize" Count="@count" PageChanged="PageChanged">
@@ -30,7 +30,15 @@
             <RadzenCard Style="width:300px; margin: auto;">
 
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
-                    <RadzenImage Path="Images/Mash.jpg" Style="width: 80px; height: 80px; border-radius: 50%" />
+                    @if (postResponse.AuthorImage is null)
+                    {
+                        <RadzenImage Path="Images/Mash.jpg" Style="width: 80px; height: 80px; border-radius: 50%" />
+                    }
+                    else
+                    {
+                        <RadzenImage Path="@postResponse.AuthorImage" style="border-radius: 16px; height: 32px; width: 32px" />
+                    }
+                   
                     <RadzenStack Gap="0">
                         <RadzenText TextStyle="TextStyle.Body1"><b>@(postResponse.Author)</b></RadzenText>
                     </RadzenStack>

@@ -1,0 +1,110 @@
+﻿@page "/topicindex"
+@using Handcom.Web.Model.Request
+@using Handcom.Web.Model.Responses
+@using Handcom.Web.Services.Interface
+
+@inject DialogService DialogService
+@inject ITopicsService _topicsService
+
+<h1 class="text-center">Tópicos</h1>
+<br />
+<div class="d-flex flex-column gap-3">
+<RadzenButton Icon="add" Text="Adicionar Tópico" Click="CreateTopic" />
+
+
+<RadzenDataGrid  @ref="grid" IsLoading=@isLoading Count="@count" Data="@topicList" LoadData="@LoadData" AllowSorting="false" AllowFiltering="false" AllowPaging="true" PageSize="4" PagerHorizontalAlign="HorizontalAlign.Center" TItem="TopicsResponse" ColumnWidth="200px">
+    <Columns>
+       
+
+        <RadzenDataGridColumn TItem="TopicsResponse" Property="Name" Title="Topic" Width="160px" />
+        <RadzenDataGridColumn TItem="TopicsResponse" Property="Name" Title="options" Width="30px">
+            <Template Context="data">
+                    <RadzenButton Icon="edit" Click="@(() => OnEditTopic(data))" />
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+</div>
+@code {
+    RadzenDataGrid<TopicsResponse> grid;
+    int count; // Deve refletir o número total de itens, não o número de páginas.
+
+    bool isLoading = false;
+    List<TopicsResponse> topicList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await GetOrders(new TopicsRequest { Page = 1, Size = 4, Sort = "", Direction = 1 }); // O tamanho da página deve coincidir com o PageSize do RadzenDataGrid.
+    }
+
+    async Task GetOrders(TopicsRequest request)
+    {
+        isLoading = true;
+        var result = await _topicsService.GetListTopics(request);
+        isLoading = false;
+
+        if (result.IsSuccess)
+        {
+            count = result.Data.TotalElements; // TotalItemCount é o número total de itens disponíveis.
+            topicList = result.Data.Content;
+            StateHasChanged();
+        }
+    }
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        int currentPage = ((int)args.Skip / (int)args.Top) + 1;
+
+        TopicsRequest topicRequest = new TopicsRequest
+            {
+                Page = currentPage,
+                Size = (int)args.Top,
+                Sort = args.OrderBy,             
+            };
+
+        await GetOrders(topicRequest);
+    }
+
+    public async Task OnEditTopic(TopicsResponse topic)
+    {
+        var parameter = new Dictionary<string, object>() {
+                { "topic", topic }
+            };
+
+        var dialogResult = await DialogService.OpenAsync<EditTopic>("", parameter,
+                                                   new DialogOptions()
+                                                       {
+                                                           Width = "25%",
+                                                           CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                           Draggable = ModalState.Draggable,
+                                                           Resizable = ModalState.Resizable,
+                                                           Height = "35%",
+                                                           ShowClose = ModalState.ShowClose
+                                                       });
+        if (dialogResult is not null)
+        {
+            await InvokeAsync(() => { StateHasChanged(); });
+            await GetOrders(new TopicsRequest { Page = 1, Size = 4, Sort = "", Direction = 1 });
+        }
+
+    }
+
+    public async Task CreateTopic()
+    {
+        var dialogResult = await DialogService.OpenAsync<CreateTopic>("", null,
+                                                             new DialogOptions()
+                                                                 {
+                                                                     Width = "25%",
+                                                                     CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                                     Draggable = ModalState.Draggable,
+                                                                     Resizable = ModalState.Resizable,
+                                                                     Height = "45%",
+                                                                     ShowClose = ModalState.ShowClose
+                                                                 });
+        if (dialogResult is not null)
+        {
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+}

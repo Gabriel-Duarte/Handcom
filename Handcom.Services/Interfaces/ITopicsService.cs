@@ -14,5 +14,6 @@ namespace Handcom.Services.Interfaces
     {
         Task<Topics> CreateAsync(TopicsCreateRequestDto topicsCreateRequestDto, CancellationToken cancellationToken);
         Task<Page<Topics>> GetAsync(TopicsPage pagination, CancellationToken cancellationToken);
+        Task<Topics> UpdateAsync(TopicsUpdateRequestDto topicsCreateRequestDto, CancellationToken cancellationToken);
     }
 }

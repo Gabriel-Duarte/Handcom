@@ -14,6 +14,7 @@ namespace Handcom.Domain.Dto.Responses
         public string? ContentImage { get; set; }
         public string Author { get; set; }
         public string AuthorId { get; set; }
+        public string AuthorImage { get; set; }
         public Guid TopicId { get; set; }
         public DateTime CreatedAt { get; set; }
     }

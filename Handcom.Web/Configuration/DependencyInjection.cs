@@ -21,7 +21,7 @@ namespace Handcom.Web.Configuration
             services.AddScoped<ITopicsService, TopicsService>();
             services.AddScoped<IPostsServices, PostsServices>();
             services.AddScoped<ICommentsService, CommentsService>();
-
+            services.AddScoped<IUserProfileService, UserProfileService>();
 
             return services;
         }

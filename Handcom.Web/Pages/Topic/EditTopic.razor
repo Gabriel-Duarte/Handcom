@@ -1,22 +1,17 @@
-﻿@page "/createuser"
-
+﻿@page "/edittopic/{topic}"
 @using Handcom.Web.Model.Request
+@using Handcom.Web.Model.Responses
 @using Handcom.Web.Services.Interface
-@using Microsoft.Extensions.Configuration
-@using System.Text.RegularExpressions;
-@using System.Text.Json;
-@using Radzen.Blazor
 
-@inject IAuthService AuthService
+@inject ITopicsService _topicsService
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 
-
-<RadzenTemplateForm Data="@user" Submit="@((RegisterUserRequest args) => Submit(args))">
+<RadzenTemplateForm Data="@topicUpdateRequest" Submit="@((TopicsUpdateRequest args) => Submit(args))">
     <RadzenColumn Size="12" SizeMD="6">
         <RadzenStack>
-            <RadzenFieldset Text="Novo Usuario">
+            <RadzenFieldset Text="Atualizar Tópico">
                 <RadzenStack Gap="1rem">
                     <RadzenRow AlignItems="AlignItems.Center">
                         <RadzenColumn Size="12" SizeMD="4">
@@ -24,26 +19,7 @@
                             <RadzenRequiredValidator Component="Name" Text="Campo obrigatório" Popup Style="position: absolute" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Ana" @bind-Value="@user.Username" />
-                        </RadzenColumn>
-                    </RadzenRow>
-                    <RadzenRow AlignItems="AlignItems.Center">
-                        <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Email" />
-                            <RadzenRequiredValidator Component="Email" Popup Text="Campo obrigatório" Style="position: absolute" />
-                            <RadzenEmailValidator Component="Email" Text="Fornecer um endereço de e-mail válido" Popup Style="position: absolute" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Style="width: 100%;" Name="Email" Placeholder="maria@gcn.com" @bind-Value="@user.Email" />
-                        </RadzenColumn>
-                    </RadzenRow>
-                    <RadzenRow AlignItems="AlignItems.Center">
-                        <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Senha" />
-                            <RadzenRequiredValidator Component="Password" Popup Text="Campo obrigatório" Style="position: absolute" />
-                        </RadzenColumn>
-                        <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenPassword Style="width: 100%;" Name="Password" Placeholder="********" @bind-Value="@user.Password" />
+                            <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Ana" @bind-Value="@topicUpdateRequest.Name" />
                         </RadzenColumn>
                     </RadzenRow>
                 </RadzenStack>
@@ -52,20 +28,29 @@
     </RadzenColumn>
 
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="person_add" Text="Criar usuario" />
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Atualizar" />
         <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Click="@Cancel" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
-    private RegisterUserRequest user = new RegisterUserRequest();
 
-    private async Task Submit(RegisterUserRequest args)
+    [Parameter]
+    public TopicsResponse topic { get; set; }
+    TopicsUpdateRequest topicUpdateRequest = new TopicsUpdateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        topicUpdateRequest.Name = topic.Name;
+        topicUpdateRequest.Id = topic.Id;
+    }
+    private async Task Submit(TopicsUpdateRequest args)
     {
         try
         {
 
-            var result = await AuthService.Register(args);
+            var result = await _topicsService.UpdateTopic(args);
 
             if (result.IsSuccess)
             {
@@ -74,7 +59,7 @@
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success:",
-                        Detail = "Usuario criado",
+                        Detail = "Topico atualizado",
                         Duration = 4000
                     });
 
@@ -99,7 +84,7 @@
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Erro:",
-                        Detail = "Erro ao criar usuario",
+                        Detail = "Erro ao atualizar topico",
                         Duration = 4000
                     });
             }
@@ -109,11 +94,8 @@
             Console.WriteLine(ex.Message);
         }
     }
-
-
     void Cancel()
     {
         DialogService.Close(null);
     }
-
 }

@@ -51,7 +51,9 @@ namespace Handcom.Services.Services
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
-
+                if (string.IsNullOrWhiteSpace(topicsCreateRequestDto.Name))
+                    return Notify("Nome não encontrado.", new Topics());
+            
                 var topic = _mapper.Map<Topics>(topicsCreateRequestDto);
                
                 return await _topicsRepository.CreateAsync(topic, cancellationToken).ConfigureAwait(false);
@@ -62,5 +64,31 @@ namespace Handcom.Services.Services
                 return Notify("Ocorreu um erro.", new Topics());
             }
         }
+    
+    public async Task<Topics> UpdateAsync(TopicsUpdateRequestDto topicsUpdateRequestDto, CancellationToken cancellationToken)
+    {
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+                if (string.IsNullOrWhiteSpace(topicsUpdateRequestDto.Name))
+                    return Notify("Nome não encontrado.", new Topics());
+
+                if (topicsUpdateRequestDto.Id == Guid.Empty)
+                    return Notify("Id não encontrado.", new Topics());
+
+              var resultTopic = await _topicsRepository.GetByIdAsync(topicsUpdateRequestDto.Id, cancellationToken);
+                if(resultTopic is null)
+                    return Notify("topico não encontrado.", new Topics());
+
+                resultTopic.Name = topicsUpdateRequestDto.Name;
+
+                return await _topicsRepository.UpdateAsync(resultTopic, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            return Notify("Ocorreu um erro.", new Topics());
+        }
     }
+}
 }

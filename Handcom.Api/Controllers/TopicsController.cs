@@ -31,6 +31,7 @@ namespace Handcom.Api.Controllers
 
 
         [HttpPost()]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Topics>> Create(TopicsCreateRequestDto topicRequestDto)
@@ -39,6 +40,18 @@ namespace Handcom.Api.Controllers
                 return CustomResponse(ModelState);
 
             return CustomResponse(await _topicsService.CreateAsync(topicRequestDto, CancellationToken.None).ConfigureAwait(false));
+        }
+
+        [HttpPut()]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Topics>> Update(TopicsUpdateRequestDto topicsUpdateRequestDto)
+        {
+            if (!ModelState.IsValid)
+                return CustomResponse(ModelState);
+
+            return CustomResponse(await _topicsService.UpdateAsync(topicsUpdateRequestDto, CancellationToken.None).ConfigureAwait(false));
         }
     }
 

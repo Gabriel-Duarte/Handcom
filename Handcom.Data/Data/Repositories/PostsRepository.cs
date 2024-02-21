@@ -52,7 +52,8 @@ namespace Handcom.Data.Data.Repositories
                 foreach (var post in result)
                 {
                     var user = await _userManager.FindByIdAsync(post.AuthorId.ToString());
-                     post.Author = user.UserName;                 
+                     post.Author = user.UserName;
+                    post.AuthorImage = user.ImagePath;
                 }
                 return new Page<PostsResponseDto>(total, result, PostsPage);
             }

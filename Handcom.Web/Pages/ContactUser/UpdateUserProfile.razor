@@ -1,47 +1,39 @@
-﻿@page "/createPost"
+﻿@page "/updateuserprofile"
 @using Handcom.Web.Model.Request
 @using Handcom.Web.Model.Responses
+
+@using Handcom.Web.Pages.Posts
 @using Handcom.Web.Services.Interface
 
-@inject IPostsServices _postsServices
-@inject ITopicsService _topicsService
-@inject NavigationManager NavigationManager
+@inject IUserProfileService _userProfileService;
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 
-<RadzenTemplateForm Data="@postsCreateRequest" Submit="@((PostsCreateRequest args) => Submit(args))">
+<RadzenTemplateForm Data="@userProfile" Submit="@((UserProfileResponse args) => Submit(args))">
+        <RadzenRow>
     <RadzenColumn Size="12" SizeMD="6">
         <RadzenStack>
-            <RadzenFieldset Text="Criar postagem">
+            <RadzenFieldset Text="Novo Usuario">
                 <RadzenStack Gap="1rem">
+
                     <RadzenRow AlignItems="AlignItems.Center">
                         <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Titulo" />
-                            <RadzenRequiredValidator Component="Title" Text="Campo obrigatório" Popup Style="position: absolute" />
+                            <RadzenLabel Text="Name" />
+                            <RadzenRequiredValidator Component="Name" Text="Campo obrigatório" Popup Style="position: absolute" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Style="width: 100%;" Name="Title" Placeholder="Adicione titulo" @bind-Value="@postsCreateRequest.Title" />
+                            <RadzenTextBox Style="width: 100%;" Name="Name" Placeholder="Ana" @bind-Value="@userProfile.UserName" />
                         </RadzenColumn>
-                    </RadzenRow>
+                    </RadzenRow> 
                     <RadzenRow AlignItems="AlignItems.Center">
                         <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Conteudo" />
-                            <RadzenRequiredValidator Component="Content" Popup Text="Campo obrigatório" Style="position: absolute" />                          
+                            <RadzenLabel Text="Email" />
+                            <RadzenRequiredValidator Component="Email" Popup Text="Campo obrigatório" Style="position: absolute" />
+                            <RadzenEmailValidator Component="Email" Text="Fornecer um endereço de e-mail válido" Popup Style="position: absolute" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextArea Style="width: 100%;" Name="Content" Placeholder="Me diga o que está pensando " @bind-Value="@postsCreateRequest.Content" />
+                            <RadzenTextBox Style="width: 100%;" Name="Email" Placeholder="maria@gcn.com" @bind-Value="@userProfile.Email" Disabled />
                         </RadzenColumn>
-                    </RadzenRow>
-                   <RadzenRow AlignItems="AlignItems.Center">
-                        <RadzenColumn Size="12" SizeMD="4">
-                            <RadzenLabel Text="Select Value" Component="DropDownBindValue" Style="margin-right: 8px; vertical-align: middle;" />
-                            <RadzenRequiredValidator Component="Topic" Popup Text="Campo obrigatório" Style="position: absolute" />                          
-                        </RadzenColumn>
-                        <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenDropDown AllowClear="true" @bind-Value=postsCreateRequest.TopicId
-                                            LoadData=@LoadData AllowFiltering="true"
-                                            Data=@topic TextProperty="Name" ValueProperty="Id" Style="width: 100%; max-width: 400px;" Name="Topic" />
-                        </RadzenColumn>                     
                     </RadzenRow>
                 </RadzenStack>
             </RadzenFieldset>
@@ -50,65 +42,53 @@
     <RadzenColumn Size="12" SizeMD="3">
         <RadzenFieldset Text="Imagem">
             <RadzenStack Gap="1rem">
-                @if (@postsCreateRequest.ContentImage is null)
+                @if (@userProfile.ImagePath is null)
                 {
                     <RadzenImage id="purchaseImage"
                                  Path="Images/NotImage.jpeg"
-                                 Style="width: 300px; height: 300px;" />
+                                 Style="width: 300px; height: 300px; border-radius: 50%" />
                 }
                 else
                 {
                     <RadzenImage id="purchaseImage"
-                                 Path="@postsCreateRequest.ContentImage"
-                                 Style="width: 300px; height: 300px;" />
+                                 Path="@userProfile.ImagePath"
+                                 Style="width: 300px; height: 300px; border-radius: 50%"  />
                 }
             </RadzenStack>
             <br />
             <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Small" Click="@UpdateImage" Icon="add_a_photo" Text="Alterar Imagem" Style="text-align: left;" />
         </RadzenFieldset>
     </RadzenColumn>
+    </RadzenRow>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="add_circle_outline" Text="Criar postagem" />
-        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Click="@Cancel" />
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="person_add" Text="Criar usuario" />
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
-    List<TopicsResponse> topic = new List<TopicsResponse>();
-    private PostsCreateRequest postsCreateRequest = new PostsCreateRequest();
 
+    UserProfileResponse userProfile = new UserProfileResponse();
     protected override async Task OnInitializedAsync()
     {
-        LoadTopic(null);
-
-    }
-    async void LoadData(LoadDataArgs args)
-    {
-        LoadTopic(args.Filter);
-    }
-    async void LoadTopic(string Search)
-    {
-        var result = await _topicsService.GetListTopics(new TopicsRequest
-            {
-                Page = 1,
-                Size = 30,
-                Sort = "",
-                Direction = 1,
-                Search = Search
-            });
+        await base.OnInitializedAsync();
+        var result = await _userProfileService.GetUserProfile();
         if (result.IsSuccess)
         {
-            topic = result.Data.Content;
+            userProfile = result.Data;
         }
-        InvokeAsync(StateHasChanged);
+       
     }
-
-    private async Task Submit(PostsCreateRequest args)
+    private async Task Submit(UserProfileResponse args)
     {
         try
         {
+            UpdateUserProfileRequest user = new UpdateUserProfileRequest
+                {
+                    UserName = args.UserName,
+                    ImagePath = args.ImagePath
+                };
 
-            var result = await _postsServices.CreatePosts(args);
+            var result = await _userProfileService.UpdateUserProfile(user);
 
             if (result.IsSuccess)
             {
@@ -117,11 +97,11 @@
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success:",
-                        Detail = "Poste Publicado",
+                        Detail = "Usuario atualizado",
                         Duration = 4000
                     });
 
-                DialogService.Close(true);
+                DialogService.Close(result.Data);
             }
             else if (result.Errors is not null)
             {
@@ -142,7 +122,7 @@
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Erro:",
-                        Detail = "Erro ao Publicar",
+                        Detail = "Erro ao atualizar usuario",
                         Duration = 4000
                     });
             }
@@ -152,7 +132,6 @@
             Console.WriteLine(ex.Message);
         }
     }
-
     public async Task UpdateImage()
     {
         var dialogResult = await DialogService.OpenAsync<UpdateImage>("Defina uma nova imagem", null,
@@ -167,13 +146,7 @@
                                                                  });
         if (dialogResult is not null)
         {
-            postsCreateRequest.ContentImage = dialogResult;
+            userProfile.ImagePath = dialogResult;
         }
     }
-
-    void Cancel()
-    {
-        DialogService.Close(null);
-    }
-
 }
