@@ -7,11 +7,6 @@ using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Data.Data.Repositories
 {
@@ -36,7 +31,12 @@ namespace Handcom.Data.Data.Repositories
 
                 var content = await PaginateAsync(queryData, commentsPage, cancellationToken).ConfigureAwait(false);
                 var total = await queryData.CountAsync(cancellationToken).ConfigureAwait(false);
-               
+
+                var authorIds = content.Select(c => c.AuthorId.ToString()).Distinct().ToList();
+
+                var users = await _userManager.Users.Where(u => authorIds.Contains(u.Id))
+                                                    .ToDictionaryAsync(u => u.Id, u => u);
+
                 var result = content.Select(x => new CommentsResponseDto
                 {
                     Id = x.Id,
@@ -44,12 +44,9 @@ namespace Handcom.Data.Data.Repositories
                     AuthorId = x.AuthorId,
                     PostId = x.PostId,
                     CreatedAt = x.CreatedAt,
+                    AuthorName = users[x.AuthorId].UserName
                 }).ToList();
-                foreach (var comment in result)
-                {
-                    var user = await _userManager.FindByIdAsync(comment.AuthorId.ToString());
-                    comment.AuthorName = user.UserName;
-                }
+
                 return new Page<CommentsResponseDto>(total, result, commentsPage);
             }
             catch (Exception exception)
@@ -58,19 +55,19 @@ namespace Handcom.Data.Data.Repositories
             }
         }
 
-        private static void ListCommentsWhere(CommentsPage topicsPage, ref IQueryable<Comments> queryData)
+        private static void ListCommentsWhere(CommentsPage commentsPage, ref IQueryable<Comments> queryData)
         {
-            if (!string.IsNullOrWhiteSpace(topicsPage.Search))
+            if (!string.IsNullOrWhiteSpace(commentsPage.Search))
                 queryData = queryData
-                    .Where(s => s.Content.ToUpper().Contains(topicsPage.Search.ToUpper()) ||
-                    s.PostId.ToString() == topicsPage.Search);
+                    .Where(s => s.Content.ToUpper().Contains(commentsPage.Search.ToUpper()) ||
+                    s.PostId.ToString() == commentsPage.Search);
         }
 
-            private static void ListCommentsOrderBy(CommentsPage topicsPage, ref IQueryable<Comments> queryData)
+        private static void ListCommentsOrderBy(CommentsPage commentsPage, ref IQueryable<Comments> queryData)
         {
-            queryData = topicsPage.Sort switch
+            queryData = commentsPage.Sort switch
             {
-                "name" => topicsPage.Direction.Equals(SortDirection.ASC) ? queryData.OrderBy(o => o.CreatedAt) : queryData.OrderByDescending(o => o.CreatedAt),
+                "name" => commentsPage.Direction.Equals(SortDirection.ASC) ? queryData.OrderBy(o => o.CreatedAt) : queryData.OrderByDescending(o => o.CreatedAt),
                 _ => queryData.OrderBy(o => o.CreatedAt),
             };
         }

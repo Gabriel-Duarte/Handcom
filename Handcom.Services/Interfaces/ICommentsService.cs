@@ -3,11 +3,6 @@ using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Request;
 using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Services.Interfaces
 {

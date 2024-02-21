@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Handcom.Domain.Dto.Responses
+﻿namespace Handcom.Domain.Dto.Responses
 {
     public class UserProfileResponseDto
     {
-        public string Id { get; set; }
-        public string UserName { get; set; }
-        public string ImagePath { get; set; }
-        public string Email { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
     }
 }

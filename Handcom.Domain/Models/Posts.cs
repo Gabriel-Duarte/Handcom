@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Handcom.Domain.Models
 {
@@ -34,7 +29,7 @@ namespace Handcom.Domain.Models
         [Required(ErrorMessage = "O campo Inserido é obrigatório.")]
         public DateTime CreatedAt { get; set; }
 
-   
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public virtual ApplicationUser? ApplicationUser { get; set; }
 

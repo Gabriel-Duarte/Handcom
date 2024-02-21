@@ -27,7 +27,7 @@ namespace Handcom.Api.Controllers
         public async Task<ActionResult<Page<Posts>>> Get([FromQuery] PostsPage PostsPage) =>
            CustomResponse(await _postsService.GetAsync(PostsPage, CancellationToken.None).ConfigureAwait(false));
 
-      
+
         [HttpPost()]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]

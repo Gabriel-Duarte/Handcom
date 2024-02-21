@@ -1,15 +1,13 @@
 ﻿using Blazored.LocalStorage;
 using Handcom.Web.Model.Extensions;
+using Handcom.Web.Model.Request;
+using Handcom.Web.Model.Responses;
 using Handcom.Web.Services.Authentication;
 using Handcom.Web.Services.Interface;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Text;
-using Handcom.Web.Model.Request;
-using Handcom.Web.Model.Responses;
+using System.Text.Json;
 
 namespace Handcom.Web.Services.Services
 {
@@ -18,17 +16,14 @@ namespace Handcom.Web.Services.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILocalStorageService _localStorage;
-        private readonly NavigationManager _navigationManager;
 
         public AuthService(IHttpClientFactory httpClientFactory,
             AuthenticationStateProvider authenticationStateProvider,
-            ILocalStorageService localStorage,
-            NavigationManager navigationManager)
+            ILocalStorageService localStorage)
         {
             _httpClientFactory = httpClientFactory;
             _authenticationStateProvider = authenticationStateProvider;
             _localStorage = localStorage;
-            _navigationManager = navigationManager;
         }
 
         public async Task<Response<LoginResponse>> Login(LoginRequest loginModel)
@@ -40,35 +35,37 @@ namespace Handcom.Web.Services.Services
                 var requestContent = new StringContent(loginAsJson, Encoding.UTF8, "application/json");
 
                 var response = await httpClient.PostAsync("api/Auth/Login", requestContent);
-
-
-                var loginResult = JsonSerializer.Deserialize<Response<LoginResponse>>
+                if (response.IsSuccessStatusCode)
+                {
+                    var loginResult = JsonSerializer.Deserialize<Response<LoginResponse>>
                                   (await response.Content.ReadAsStringAsync(),
                                   new JsonSerializerOptions
                                   {
                                       PropertyNameCaseInsensitive = true
                                   });
 
+                    await _localStorage.SetItemAsync("AccessToken", loginResult.Data.AccessToken);
+                    await _localStorage.SetItemAsync("RefreshToken", loginResult.Data.RefreshToken);
+                    await _localStorage.SetItemAsync("tokenExpiration", loginResult.Data.ExpiresIn);
+                    await _localStorage.SetItemAsync("User", loginResult.Data.UserToken);
 
-                if (!response.IsSuccessStatusCode)
-                {
+                    ((ApiAuthenticationStateProvider)_authenticationStateProvider)
+                                        .MarkUserAsAuthenticated(loginModel.Email);
+
+                    httpClient.DefaultRequestHeaders.Authorization =
+                                new AuthenticationHeaderValue("bearer",
+                                                                 loginResult.Data.AccessToken);
+
                     return loginResult;
                 }
-
-                await _localStorage.SetItemAsync("AccessToken", loginResult.Data.AccessToken);
-                await _localStorage.SetItemAsync("RefreshToken", loginResult.Data.RefreshToken);
-                await _localStorage.SetItemAsync("tokenExpiration", loginResult.Data.ExpiresIn);
-                await _localStorage.SetItemAsync("User", loginResult.Data.UserToken);
-
-                ((ApiAuthenticationStateProvider)_authenticationStateProvider)
-                                    .MarkUserAsAuthenticated(loginModel.Email);
-
-                httpClient.DefaultRequestHeaders.Authorization =
-                            new AuthenticationHeaderValue("bearer",
-                                                             loginResult.Data.AccessToken);
-
-                return loginResult;
-
+                else
+                {
+                    return new Response<LoginResponse>
+                    {
+                        IsSuccess = false,
+                        Errors = new List<string> { $"A API retornou um erro: {response.StatusCode}" }
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -94,18 +91,24 @@ namespace Handcom.Web.Services.Services
 
                 var response = await httpClient.PostAsync("api/Auth/Register", requestContent);
 
-                var loginResult = JsonSerializer.Deserialize<Response<RegisterUserResponse>>
+                if (response.IsSuccessStatusCode)
+                {
+                    var loginResult = JsonSerializer.Deserialize<Response<RegisterUserResponse>>
                                   (await response.Content.ReadAsStringAsync(),
                                   new JsonSerializerOptions
                                   {
                                       PropertyNameCaseInsensitive = true
                                   });
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    return loginResult;
+                    return loginResult ?? new Response<RegisterUserResponse> { IsSuccess = false, Errors = new List<string> { "Falha ao desserializar a resposta." } };
                 }
-                return loginResult;
+                else
+                {
+                    return new Response<RegisterUserResponse>
+                    {
+                        IsSuccess = false,
+                        Errors = new List<string> { $"A API retornou um erro: {response.StatusCode}" }
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -113,7 +116,5 @@ namespace Handcom.Web.Services.Services
                 throw new Exception(ex.ToString());
             }
         }
-
-
     }
 }

@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using Handcom.Domain.DataAccess.Interfaces;
-using Handcom.Domain.DataAccess.Pagination.Page;
-using Handcom.Domain.Dto.Request;
+﻿using Handcom.Domain.Dto.Request;
 using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
@@ -9,11 +6,6 @@ using Handcom.Services.Services.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Services.Services
 {
@@ -38,7 +30,10 @@ namespace Handcom.Services.Services
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var user = await _userManager.FindByIdAsync(_httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value);
+                var user = await _userManager
+                    .FindByIdAsync(_httpContextAccessor.HttpContext?
+                    .User.Claims
+                    .FirstOrDefault(c => c.Type == "UserID")?.Value);
                 if (user != null)
                 {
                     UserProfileResponseDto userResponseDto = new UserProfileResponseDto
@@ -73,16 +68,16 @@ namespace Handcom.Services.Services
                 {
                     user.UserName = updateUserRequestDto.UserName;
                     user.ImagePath = updateUserRequestDto.ImagePath;
-                   
+
                     var result = await _userManager.UpdateAsync(user);
                     if (result != null)
-                    return new UserProfileResponseDto
-                    {
-                        Id = user.Id,
-                        UserName = user.UserName,
-                        Email = user.Email,
-                        ImagePath = user.ImagePath
-                    };
+                        return new UserProfileResponseDto
+                        {
+                            Id = user.Id,
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            ImagePath = user.ImagePath
+                        };
                 }
 
                 return Notify("Usuario não poode ser atualizado.", new UserProfileResponseDto());

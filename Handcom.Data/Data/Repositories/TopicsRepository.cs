@@ -10,11 +10,10 @@ namespace Handcom.Data.Data.Repositories
 {
     public class TopicsRepository : Repository<Topics>, ITopicsRepository
     {
-   
         public TopicsRepository(IUnitOfWork uow, AppDbContext context) : base(uow, context)
         {
         }
-      
+
         public async Task<Page<Topics>> GetTopicsAsync(TopicsPage topicsPage, CancellationToken cancellationToken)
         {
             try

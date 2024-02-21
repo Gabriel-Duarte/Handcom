@@ -1,12 +1,6 @@
 ﻿using Handcom.Domain.Extensions;
 using Handcom.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Services.Services
 {

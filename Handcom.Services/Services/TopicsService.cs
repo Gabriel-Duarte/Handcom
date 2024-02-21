@@ -2,9 +2,7 @@
 using Handcom.Domain.DataAccess.Interfaces;
 using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
-using Handcom.Domain.Dto.Extensions;
 using Handcom.Domain.Dto.Request;
-using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Services.Base;
@@ -53,9 +51,9 @@ namespace Handcom.Services.Services
                 cancellationToken.ThrowIfCancellationRequested();
                 if (string.IsNullOrWhiteSpace(topicsCreateRequestDto.Name))
                     return Notify("Nome não encontrado.", new Topics());
-            
+
                 var topic = _mapper.Map<Topics>(topicsCreateRequestDto);
-               
+
                 return await _topicsRepository.CreateAsync(topic, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -64,31 +62,31 @@ namespace Handcom.Services.Services
                 return Notify("Ocorreu um erro.", new Topics());
             }
         }
-    
-    public async Task<Topics> UpdateAsync(TopicsUpdateRequestDto topicsUpdateRequestDto, CancellationToken cancellationToken)
-    {
-        try
+
+        public async Task<Topics> UpdateAsync(TopicsUpdateRequestDto topicsUpdateRequestDto, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (string.IsNullOrWhiteSpace(topicsUpdateRequestDto.Name))
                     return Notify("Nome não encontrado.", new Topics());
 
                 if (topicsUpdateRequestDto.Id == Guid.Empty)
                     return Notify("Id não encontrado.", new Topics());
 
-              var resultTopic = await _topicsRepository.GetByIdAsync(topicsUpdateRequestDto.Id, cancellationToken);
-                if(resultTopic is null)
+                var resultTopic = await _topicsRepository.GetByIdAsync(topicsUpdateRequestDto.Id, cancellationToken);
+                if (resultTopic is null)
                     return Notify("topico não encontrado.", new Topics());
 
                 resultTopic.Name = topicsUpdateRequestDto.Name;
 
                 return await _topicsRepository.UpdateAsync(resultTopic, cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-            return Notify("Ocorreu um erro.", new Topics());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return Notify("Ocorreu um erro.", new Topics());
+            }
         }
     }
-}
 }

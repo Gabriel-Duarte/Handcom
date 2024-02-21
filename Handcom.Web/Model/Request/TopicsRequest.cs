@@ -2,7 +2,7 @@
 
 namespace Handcom.Web.Model.Request
 {
-    public class TopicsRequest: Pageable
+    public class TopicsRequest : Pageable
     {
     }
 }

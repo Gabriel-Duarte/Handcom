@@ -1,11 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Handcom.Domain.DataAccess.Pagination.Base
+﻿namespace Handcom.Domain.DataAccess.Pagination.Base
 {
     public class Page<T>
     {

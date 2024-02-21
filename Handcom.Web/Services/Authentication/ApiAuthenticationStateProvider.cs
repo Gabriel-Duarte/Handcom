@@ -1,10 +1,7 @@
 ﻿using Blazored.LocalStorage;
 using Handcom.Web.Model.Extensions;
-using Handcom.Web.Model.Responses;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Globalization;
-using System.Linq.Dynamic.Core.Tokenizer;
-using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -30,10 +27,10 @@ namespace Handcom.Web.Services.Authentication
 
             if (string.IsNullOrWhiteSpace(savedToken) || TokenExpirou(expirationToken))
             {
-                await RefreshToken(); // Tenta renovar o token se estiver expirado
+                await RefreshToken();
             }
 
-            savedToken = await _localStorage.GetItemAsync<string>("AccessToken"); // Obtém o token após a possível renovação
+            savedToken = await _localStorage.GetItemAsync<string>("AccessToken");
 
             if (string.IsNullOrWhiteSpace(savedToken))
             {
@@ -72,7 +69,6 @@ namespace Handcom.Web.Services.Authentication
             DateTime dataAtualUtc = DateTime.Now;
             DateTime dataExpiracao;
 
-            // Array de formatos de data que você deseja suportar
             string[] formatos = { "yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'", "yyyy-MM-dd'T'HH:mm:ss'Z'" };
 
             foreach (var formato in formatos)
@@ -84,7 +80,6 @@ namespace Handcom.Web.Services.Authentication
                         return true;
                     }
 
-                    // Se conseguiu converter com sucesso, sai do loop
                     break;
                 }
             }
@@ -120,7 +115,6 @@ namespace Handcom.Web.Services.Authentication
                 }
                 else
                 {
-                    // Se não houver reivindicação de função "User", adicione uma reivindicação padrão
                     claims.Add(new Claim("User", "DefaultRole"));
                 }
 
@@ -143,7 +137,7 @@ namespace Handcom.Web.Services.Authentication
                 TokenDto refreshToken = new TokenDto();
                 refreshToken.RefreshToken = await _localStorage.GetItemAsync<string>("RefreshToken");
                 refreshToken.AccessToken = await _localStorage.GetItemAsync<string>("AccessToken");
-              
+
                 if (string.IsNullOrWhiteSpace(refreshToken.AccessToken))
                 {
                     MarkUserAsLoggedOut();
@@ -165,14 +159,10 @@ namespace Handcom.Web.Services.Authentication
                                       PropertyNameCaseInsensitive = true
                                   });
 
-                    // Atualizar o token no armazenamento local
                     await _localStorage.SetItemAsync("AccessToken", newToken.AccessToken);
                     await _localStorage.SetItemAsync("RefreshToken", newToken.RefreshToken);
-
-                    // Atualizar a expiração (ajuste conforme necessário)
                     await _localStorage.SetItemAsync("tokenExpiration", DateTime.UtcNow.AddHours(1).ToString("yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'"));
 
-                    // Notificar a mudança de autenticação
                     NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
                 }
                 else
@@ -186,7 +176,6 @@ namespace Handcom.Web.Services.Authentication
                 Console.WriteLine(ex.ToString());
             }
         }
-
 
         private byte[] ParseBase64WithoutPadding(string base64)
         {

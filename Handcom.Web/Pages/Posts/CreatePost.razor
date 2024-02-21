@@ -12,6 +12,8 @@
 @inject DialogService DialogService
 
 <RadzenTemplateForm Data="@postsCreateRequest" Submit="@((PostsCreateRequest args) => Submit(args))">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
     <RadzenColumn Size="12" SizeMD="6">
         <RadzenStack>
             <RadzenFieldset Text="Criar postagem">
@@ -109,6 +111,17 @@
     {
         try
         {
+            if (args.TopicId == Guid.Empty)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro:",
+                        Detail = "Campo tópico esta vazio",
+                        Duration = 4000
+                    });
+                return;
+            }
 
             var result = await _postsServices.CreatePosts(args);
 

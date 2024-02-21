@@ -8,7 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject IAuthService AuthService
 
- <RadzenRow Gap="0" Class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10 my-custom-centering-class" Style="margin-top: 20vh; width: 100%; max-width: 800px; overflow: hidden;">
+<RadzenRow Gap="0" Class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10 my-custom-centering-class" Style="margin-top: 20vh; width: 100%; max-width: 800px; overflow: hidden;">
     <RadzenColumn Size="12" SizeMD="6">
         <RadzenCard Class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12"
                     Style="height: 100%; background-image: url('Images/Inicio.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center;">
@@ -20,19 +20,19 @@
                 Login
             </RadzenText>
             <RadzenTemplateForm Data=@("SimpleLogin")>
-                <RadzenLogin LoginText="Entrar" UserText="Email" PasswordText="Senha"                      
-                         UserRequired="Usuario obrigatória"
-                         PasswordRequired="Senha obrigatória"
-                         RegisterText="Registrar"
-                         RegisterMessageText="Não tem uma conta ainda?"
-                         AllowRegister="true" AllowResetPassword="false" Username=@userName Password=@password
-                         AllowRememberMe="false" 
-                         Login=@(args => OnLogin(args, "Login with default values"))                  
-                         Register=@(args => OnRegister()) />
-        </RadzenTemplateForm>
+                <RadzenLogin LoginText="Entrar" UserText="Email" PasswordText="Senha"
+                             UserRequired="Usuario obrigatória"
+                             PasswordRequired="Senha obrigatória"
+                             RegisterText="Registrar"
+                             RegisterMessageText="Não tem uma conta ainda?"
+                             AllowRegister="true" AllowResetPassword="false" Username=@userName Password=@password
+                             AllowRememberMe="false"
+                             Login=@(args => OnLogin(args, "Login with default values"))
+                             Register=@(args => OnRegister()) />
+            </RadzenTemplateForm>
         </RadzenCard>
     </RadzenColumn>
-</RadzenRow> 
+</RadzenRow>
 
 
 
@@ -102,5 +102,5 @@
         await InvokeAsync(() => { StateHasChanged(); });
     }
 
-  
+
 }

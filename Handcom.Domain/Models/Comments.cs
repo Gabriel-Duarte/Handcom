@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 
 namespace Handcom.Domain.Models
 {
-    public class Comments: Entity
+    public class Comments : Entity
     {
         [Required(ErrorMessage = "O campo conteudo é obrigatório.")]
         [Column(TypeName = "varchar(500)")]
@@ -25,7 +20,7 @@ namespace Handcom.Domain.Models
         [Required(ErrorMessage = "O campo Inserido é obrigatório.")]
         public DateTime CreatedAt { get; set; }
 
-    
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public virtual ApplicationUser? ApplicationUser { get; set; }
 

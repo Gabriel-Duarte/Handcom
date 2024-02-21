@@ -4,7 +4,6 @@ using Handcom.Domain.Dto.Request;
 using Handcom.Domain.Dto.Responses;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Responses;
-using Handcom.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Handcom.Api.Controllers

@@ -5,20 +5,13 @@ using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Data.Data.Repositories
 {
     public class PostsRepository : Repository<Posts>, IPostsRepository
     {
-
         private readonly UserManager<ApplicationUser> _userManager;
         public PostsRepository(IUnitOfWork uow, AppDbContext context, UserManager<ApplicationUser> userManager) : base(uow, context)
         {
@@ -38,23 +31,23 @@ namespace Handcom.Data.Data.Repositories
                 var content = await PaginateAsync(queryData, PostsPage, cancellationToken).ConfigureAwait(false);
                 var total = await queryData.CountAsync(cancellationToken).ConfigureAwait(false);
 
+                var authorIds = content.Select(x => x.AuthorId.ToString()).Distinct().ToList();
+                var users = await _userManager.Users.Where(u => authorIds.Contains(u.Id))
+                                                    .ToDictionaryAsync(u => u.Id, u => u);
+
                 var result = content.Select(x => new PostsResponseDto
                 {
-                    Id= x.Id,
-                    Title =x.Title,
-                    Content= x.Content,
+                    Id = x.Id,
+                    Title = x.Title,
+                    Content = x.Content,
                     ContentImage = x.ContentImage,
                     CreatedAt = x.CreatedAt,
-                    TopicId =x.TopicId,
+                    TopicId = x.TopicId,
                     AuthorId = x.AuthorId,
+                    Author = users[x.AuthorId].UserName,
+                    AuthorImage = users[x.AuthorId].ImagePath
                 }).ToList();
 
-                foreach (var post in result)
-                {
-                    var user = await _userManager.FindByIdAsync(post.AuthorId.ToString());
-                     post.Author = user.UserName;
-                    post.AuthorImage = user.ImagePath;
-                }
                 return new Page<PostsResponseDto>(total, result, PostsPage);
             }
             catch (Exception exception)
@@ -75,13 +68,13 @@ namespace Handcom.Data.Data.Repositories
 
         }
 
-            private static void ListPostOrderBy(PostsPage PostsPage, ref IQueryable<Posts> queryData)
+        private static void ListPostOrderBy(PostsPage PostsPage, ref IQueryable<Posts> queryData)
         {
             queryData = PostsPage.Sort switch
             {
                 "name" => PostsPage.Direction.Equals(SortDirection.ASC) ? queryData.OrderBy(o => o.CreatedAt) : queryData.OrderByDescending(o => o.CreatedAt),
                 _ => queryData.OrderBy(o => o.CreatedAt)
             };
+        }
     }
-}
 }

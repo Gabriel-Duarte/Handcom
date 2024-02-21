@@ -11,11 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Ioc.IoC
 {
@@ -31,7 +26,7 @@ namespace Handcom.Ioc.IoC
 
             services.AddJwt(configuration);
             services.AddAuthorization();
-           
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
@@ -51,7 +46,7 @@ namespace Handcom.Ioc.IoC
             services.AddScoped<IPostsRepository, PostsRepository>();
             services.AddScoped<IAspNetUserService, AspNetUserService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
+
             return services;
         }
     }

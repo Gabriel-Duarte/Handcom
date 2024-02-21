@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc;
-using Handcom.Services.Interfaces;
+﻿using Handcom.Services.Interfaces;
 using Handcom.Services.Responses;
 using Handcom.Services.Services.Notifications;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Handcom.Api.Controllers.Base
 {

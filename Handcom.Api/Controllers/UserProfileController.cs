@@ -1,10 +1,8 @@
 ﻿using Handcom.Api.Controllers.Base;
-using Handcom.Domain.DataAccess.Pagination.Page;
 using Handcom.Domain.Dto.Request;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
 using Handcom.Services.Responses;
-using Handcom.Services.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

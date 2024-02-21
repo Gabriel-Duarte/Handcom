@@ -22,8 +22,8 @@
     line-height: 60px; /* Isso ajudará a centralizar o ícone/texto verticalmente */
     font-size: 30px; /* Ajuste conforme necessário para o tamanho do ícone */
     text-align: center; /* Isso centralizará o ícone/texto horizontalmente */
-    background-color: #800080; /* Cor de fundo do botão */
-    border-color: #800080;
+    background-color: #4340D2; /* Cor de fundo do botão */
+    border-color: #4340D2;
     color: white; /* Cor do ícone/texto */
     border: none; /* Remove a borda padrão */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra leve para um efeito 3D */

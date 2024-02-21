@@ -1,15 +1,15 @@
-﻿using Handcom.Domain.Dto.Request;
+﻿using Handcom.Domain.Dto.Extensions;
+using Handcom.Domain.Dto.Request;
+using Handcom.Domain.Dto.Responses;
 using Handcom.Domain.Models;
 using Handcom.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Handcom.Domain.Dto.Responses;
 using Handcom.Services.Services.Base;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
-using Handcom.Domain.Dto.Extensions;
+using System.Security.Claims;
 
 
 namespace Handcom.Services.Services
@@ -88,7 +88,7 @@ namespace Handcom.Services.Services
                 if (appUser is null)
                     return Notify("Usuário ou senha incorretos.", new LoginResponseDto());
 
-                         
+
                 var result = await _signInManager.PasswordSignInAsync(appUser, loginRequestDto.Password, false, true).ConfigureAwait(false);
                 if (result.Succeeded)
                     return await GetToken(appUser, cancellationToken).ConfigureAwait(false);
@@ -186,7 +186,7 @@ namespace Handcom.Services.Services
             user.RefreshToken = refreshToken;
 
             await _userManager.UpdateAsync(user);
-           
+
             return new LoginResponseDto
             {
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
@@ -194,9 +194,9 @@ namespace Handcom.Services.Services
                 ExpiresIn = token.ValidTo,
                 UserToken = new UserTokenDto()
                 {
-                  Email = user.Email,
-                  Id = user.Id,
-                 UserImage = user.ImagePath
+                    Email = user.Email,
+                    Id = user.Id,
+                    UserImage = user.ImagePath
                 }
             };
         }

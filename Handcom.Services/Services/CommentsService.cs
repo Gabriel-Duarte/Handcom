@@ -9,11 +9,6 @@ using Handcom.Services.Interfaces;
 using Handcom.Services.Services.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Services.Services
 {
@@ -22,21 +17,18 @@ namespace Handcom.Services.Services
         private readonly ILogger<CommentsService> _logger;
         private readonly ICommentsRepository _commentsRepository;
         private readonly IMapper _mapper;
-        private readonly IAspNetUserService _aspNetUserService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CommentsService(
            INotifierService notifierService,
            ILogger<CommentsService> logger,
            ICommentsRepository commentsRepository,
-           IAspNetUserService aspNetUserService,
            IMapper mapper,
            IHttpContextAccessor httpContextAccessor) : base(notifierService)
         {
             _logger = logger;
             _commentsRepository = commentsRepository;
             _mapper = mapper;
-            _aspNetUserService = aspNetUserService;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -62,7 +54,7 @@ namespace Handcom.Services.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (commentsCreateRequestDto.Content is null)
+                if (string.IsNullOrWhiteSpace(commentsCreateRequestDto.Content))
                     return Notify("Conteudo não encontrado.", new Comments());
 
                 if (commentsCreateRequestDto.PostId == Guid.Empty)

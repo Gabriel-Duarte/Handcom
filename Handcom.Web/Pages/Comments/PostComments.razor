@@ -1,4 +1,5 @@
 ﻿@page "/postcomments/{postid}"
+
 @using Handcom.Web.Model.Request
 @using Handcom.Web.Model.Responses
 @using Handcom.Web.Services.Interface
@@ -7,35 +8,36 @@
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 <div class="modal-content">
-    <!-- Conteúdo do Modal que pode rolar -->
-    <div class="modal-body">
-<RadzenDataList WrapItems="true" AllowPaging="false" Data="@commentsList" TItem="CommentsResponse">
-    <Template Context="comments">
-        <RadzenCard Style="width:300px;">
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenLabel Text=@comments.AuthorName Style="font-weight: bold;" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="8">
-                    <RadzenLabel Style="width: 100%;" Text=@comments.Content />
-                </RadzenColumn>
-            </RadzenRow>
-        </RadzenCard>
-    </Template>
-</RadzenDataList>
 
-<RadzenPager ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right" Count="count" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
+
+    <div class="modal-body">
+        <RadzenDataList WrapItems="true" AllowPaging="false" Data="@commentsList" TItem="CommentsResponse">
+            <Template Context="comments">
+                <RadzenCard Style="width:300px;">
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text=@comments.AuthorName Style="font-weight: bold;" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenLabel Style="width: 100%;" Text=@comments.Content />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenCard>
+            </Template>
+        </RadzenDataList>
+        <RadzenPager ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right" Count="count" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
     </div>
-        <div class="modal-footer">
-            <RadzenTextBox Style="flex-grow: 1;" Placeholder="Digite algo..." @bind-Value="newCommentsCreateRequest.Content" />
+    <div class="modal-footer">
+        <RadzenTextBox Style="flex-grow: 1;" Placeholder="Digite algo..." @bind-Value="newCommentsCreateRequest.Content" Name="Content" />
+        <RadzenRequiredValidator Component="Content" Text="Campo em branco" Popup Style="position: absolute" />
         <RadzenButton Icon="send" Style="margin-left: -1px" Click="OnCreateComment" />
-        </div>
     </div>
+</div>
 
 @code {
     [Parameter]
-    public Guid postid { get; set; }
 
+    public Guid postid { get; set; }
     string pagingSummaryFormat = "Exibindo página {0} de {1} (total de {2} registros)";
     int pageSize;
     int count;
@@ -47,12 +49,14 @@
     {
         await base.OnInitializedAsync();
 
-        GetOrders(new CommentsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+        GetComments(new CommentsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
     }
     async void OnCreateComment()
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(newCommentsCreateRequest.Content)) return;
+
             newCommentsCreateRequest.PostId = postid;
             var result = await _commentsService.CreateComments(newCommentsCreateRequest);
 
@@ -67,7 +71,7 @@
                         Duration = 4000
                     });
                 newCommentsCreateRequest.Content = "";
-                GetOrders(new CommentsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
+                GetComments(new CommentsRequest { Page = 1, Size = 6, Sort = "", Direction = 0 });
             }
             else if (result.Errors is not null)
             {
@@ -110,10 +114,10 @@
                 Direction = 0
             };
 
-        GetOrders(commentsRequest);
+        GetComments(commentsRequest);
 
     }
-    async void GetOrders(CommentsRequest commentsRequest)
+    async void GetComments(CommentsRequest commentsRequest)
     {
         commentsRequest.Search = postid.ToString();
         var result = await _commentsService.GetListComments(commentsRequest);

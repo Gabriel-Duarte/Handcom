@@ -1,10 +1,5 @@
 ﻿using Handcom.Domain.DataAccess.Pagination.Base;
 using Handcom.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Handcom.Domain.DataAccess.Interfaces.Base
 {

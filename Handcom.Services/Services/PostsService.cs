@@ -9,9 +9,7 @@ using Handcom.Services.Interfaces;
 using Handcom.Services.Services.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.Security.Claims;
 
 
 namespace Handcom.Services.Services
@@ -19,7 +17,6 @@ namespace Handcom.Services.Services
     public class PostsService : BaseService, IPostsService
     {
         private readonly ILogger<PostsService> _logger;
-        private readonly IAspNetUserService _aspNetUserService;
         private readonly IPostsRepository _postsRepository;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
@@ -27,14 +24,12 @@ namespace Handcom.Services.Services
         public PostsService(
            INotifierService notifierService,
            ILogger<PostsService> logger,
-           IAspNetUserService aspNetUserService,
            IPostsRepository postsRepository,
            UserManager<ApplicationUser> userManager,
            IMapper mapper,
            IHttpContextAccessor httpContextAccessor) : base(notifierService)
         {
             _logger = logger;
-            _aspNetUserService = aspNetUserService;
             _postsRepository = postsRepository;
             _mapper = mapper;
             _userManager = userManager;
@@ -68,10 +63,10 @@ namespace Handcom.Services.Services
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (postsCreateRequestDto.Title is null)
+                if (string.IsNullOrWhiteSpace(postsCreateRequestDto.Title))
                     return Notify("Titulo não encontrado.", new Posts());
 
-                if (postsCreateRequestDto.Content is null)
+                if (string.IsNullOrWhiteSpace(postsCreateRequestDto.Content))
                     return Notify("Conteudo não encontrado.", new Posts());
 
                 if (postsCreateRequestDto.TopicId == Guid.Empty)
@@ -79,7 +74,11 @@ namespace Handcom.Services.Services
 
 
                 var posts = _mapper.Map<Posts>(postsCreateRequestDto);
-                posts.AuthorId = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == "UserID")?.Value;
+                posts.AuthorId =
+                    _httpContextAccessor
+                    .HttpContext?
+                    .User.Claims
+                    .FirstOrDefault(c => c.Type == "UserID")?.Value;
                 posts.CreatedAt = DateTime.Now;
 
                 return await _postsRepository.CreateAsync(posts, cancellationToken).ConfigureAwait(false);
