@@ -19,14 +19,14 @@ namespace Handcom.Api.Controllers
             _userProfileService = userProfileService;
         }
 
-        [HttpGet()]
+        [HttpGet]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Posts>> Get() =>
            CustomResponse(await _userProfileService.GetUserProfile(CancellationToken.None).ConfigureAwait(false));
 
 
-        [HttpPut()]
+        [HttpPut]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Posts>> UpdateUserProfile(UpdateUserProfileRequestDto updateUserProfileRequestDto)

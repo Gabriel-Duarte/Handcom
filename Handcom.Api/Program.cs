@@ -1,6 +1,7 @@
 using Handcom.Api.Configuration;
 using Handcom.Ioc.IoC;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -12,10 +13,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructureAPI(builder.Configuration);
 builder.Services.AddCors(options =>
 {
+    var WebApplication = builder.Configuration["WebApplication"];
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("https://localhost:44312") // Substitua pela sua URL segura específica
+            builder.WithOrigins(WebApplication)
                    .AllowAnyHeader()
                    .AllowAnyMethod();
         });

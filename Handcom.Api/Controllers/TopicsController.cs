@@ -21,14 +21,14 @@ namespace Handcom.Api.Controllers
             _topicsService = topicsService;
         }
 
-        [HttpGet()]
+        [HttpGet]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Page<Topics>>> Get([FromQuery] TopicsPage topicsPage) =>
            CustomResponse(await _topicsService.GetAsync(topicsPage, CancellationToken.None).ConfigureAwait(false));
 
 
-        [HttpPost()]
+        [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
@@ -40,7 +40,7 @@ namespace Handcom.Api.Controllers
             return CustomResponse(await _topicsService.CreateAsync(topicRequestDto, CancellationToken.None).ConfigureAwait(false));
         }
 
-        [HttpPut()]
+        [HttpPut]
         [Authorize(AuthenticationSchemes = "Bearer")]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]

@@ -8,6 +8,7 @@
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 
+
 <RadzenTemplateForm Data="@topicCreateRequest" Submit="@((TopicCreateRequest args) => Submit(args))">
     <RadzenColumn Size="12" SizeMD="6">
         <RadzenStack>
@@ -31,6 +32,7 @@
         <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Click="@Cancel" />
     </RadzenStack>
 </RadzenTemplateForm>
+
 
 @code {
     TopicCreateRequest topicCreateRequest = new TopicCreateRequest();

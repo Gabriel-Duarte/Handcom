@@ -11,6 +11,7 @@
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 
+
 <RadzenTemplateForm Data="@postsCreateRequest" Submit="@((PostsCreateRequest args) => Submit(args))">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -76,6 +77,7 @@
         <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Click="@Cancel" />
     </RadzenStack>
 </RadzenTemplateForm>
+
 
 @code {
     List<TopicsResponse> topic = new List<TopicsResponse>();

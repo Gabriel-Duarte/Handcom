@@ -1,0 +1,20 @@
+﻿@page "/Authenticated"
+@using Handcom.Web.Services.Interface
+
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+@code {
+
+    protected async override void OnInitialized()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("Login");
+
+        }
+    }
+}

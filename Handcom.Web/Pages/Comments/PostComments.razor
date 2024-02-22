@@ -7,9 +7,9 @@
 @inject ICommentsService _commentsService;
 @inject NotificationService NotificationService
 @inject DialogService DialogService
+
+
 <div class="modal-content">
-
-
     <div class="modal-body">
         <RadzenDataList WrapItems="true" AllowPaging="false" Data="@commentsList" TItem="CommentsResponse">
             <Template Context="comments">

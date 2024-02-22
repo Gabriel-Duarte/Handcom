@@ -21,14 +21,14 @@ namespace Handcom.Api.Controllers
             _postsService = postsService;
         }
 
-        [HttpGet()]
+        [HttpGet]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Page<Posts>>> Get([FromQuery] PostsPage PostsPage) =>
            CustomResponse(await _postsService.GetAsync(PostsPage, CancellationToken.None).ConfigureAwait(false));
 
 
-        [HttpPost()]
+        [HttpPost]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Posts>> Create(PostsCreateRequestDto postsRequestDto)

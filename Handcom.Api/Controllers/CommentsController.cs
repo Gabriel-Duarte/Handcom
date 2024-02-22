@@ -29,7 +29,7 @@ namespace Handcom.Api.Controllers
            CustomResponse(await _commentsService.GetAsync(commentsPage, CancellationToken.None).ConfigureAwait(false));
 
 
-        [HttpPost()]
+        [HttpPost]
         [ProducesResponseType(typeof(ResponseSuccess), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ResponseFailure), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<Comments>> Create(CommentsCreateRequestDto commentsRequestDto)

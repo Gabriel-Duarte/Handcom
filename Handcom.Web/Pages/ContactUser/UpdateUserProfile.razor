@@ -10,6 +10,7 @@
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 
+
 <RadzenTemplateForm Data="@userProfile" Submit="@((UserProfileResponse args) => Submit(args))">
     <RadzenRow>
         <RadzenColumn Size="12" SizeMD="6">
@@ -64,6 +65,7 @@
         <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Salvar" />
     </RadzenStack>
 </RadzenTemplateForm>
+
 
 @code {
 

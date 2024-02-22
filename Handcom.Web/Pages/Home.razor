@@ -10,6 +10,7 @@
 @inject DialogService DialogService
 @inject IPostsServices _postsServices
 
+
 <RadzenCard Style="box-shadow: none; border: 1px solid #dadce0; border-radius: 24px; overflow: hidden; display: flex; align-items: center;">
     <RadzenTextBox Placeholder="Pesquise Autor ou Palavra Chave" Style="border: none; flex: 1; padding: 10px 20px;" @bind-Value="search" />
     <RadzenButton Icon="search" Style="border-top-left-radius: 0; border-bottom-left-radius: 0;" Click=@Search />
@@ -66,8 +67,8 @@
         </div>
     </Template>
 </RadzenDataList>
-
 <RadzenPager ShowPagingSummary="true" PagingSummaryFormat="@pagingSummaryFormat" HorizontalAlign="HorizontalAlign.Right" Count="count" PageSize="@pageSize" PageNumbersCount="5" PageChanged="@PageChanged" />
+
 
 @code {
 

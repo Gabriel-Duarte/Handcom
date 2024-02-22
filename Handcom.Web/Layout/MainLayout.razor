@@ -15,6 +15,7 @@
 <RadzenNotification />
 <RadzenTooltip />
 <RadzenContextMenu />
+<Authenticated />
 
 @if (Theme != "default.css")
 {
@@ -106,12 +107,7 @@
     protected async override void OnInitialized()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        if (!authState.User.Identity.IsAuthenticated)
-        {
-            NavigationManager.NavigateTo("Login");
-
-        }
-        else
+        if (authState.User.Identity.IsAuthenticated)
         {
             user = await _localStorage.GetItemAsync<UserToken>("User");
             StateHasChanged();
