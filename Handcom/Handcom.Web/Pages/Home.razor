@@ -27,7 +27,6 @@
         <button class="fixed-plus-button" @onclick="OnCreatePost">+</button>
 
         <div class="card-container">
-            <RadzenCard Style="width:300px; margin: auto;">
 
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
                     @if (postResponse.AuthorImage is null)
@@ -63,7 +62,6 @@
                         <RadzenButton Icon="chat_bubble_outline" Click="()=>OnCreateComment(postResponse.Id)" />
                     </RadzenColumn>
                 </RadzenRow>
-            </RadzenCard>
         </div>
     </Template>
 </RadzenDataList>
